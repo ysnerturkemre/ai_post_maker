@@ -1,18 +1,27 @@
 require "test_helper"
+require "tempfile"
 
 class GenerateImageJobTest < ActiveJob::TestCase
   test "creates asset and updates post status" do
     prompt = Prompt.create!(text: "Image prompt", kind: "image")
     post = prompt.posts.create!(status: "draft", kind: "image")
+    file = Tempfile.new([ "ai_post", ".png" ])
+    file.binmode
+    file.write("fake")
+    file.rewind
+    file.define_singleton_method(:content_type) { "image/png" }
+
     service = Object.new
     service.define_singleton_method(:call) do |canceled: nil, &block|
       block&.call("job_123")
       { url: "https://example.com/img.png", width: 100, height: 100 }
     end
 
-    AiHordeImageService.stub(:new, ->(*, **){ service }) do
-      assert_difference -> { Asset.count }, 1 do
-        GenerateImageJob.perform_now(prompt.id, post.id)
+    URI.stub(:open, ->(_url) { file }) do
+      AiHordeImageService.stub(:new, ->(*, **){ service }) do
+        assert_difference -> { Asset.count }, 1 do
+          GenerateImageJob.perform_now(prompt.id, post.id)
+        end
       end
     end
 
@@ -20,6 +29,10 @@ class GenerateImageJobTest < ActiveJob::TestCase
     assert_equal "generated", post.status
     assert_equal 1, post.assets.count
     assert_equal "job_123", post.data["ai_horde_job_id"]
+    assert post.assets.first.file.attached?
+  ensure
+    file&.close
+    file&.unlink
   end
 
   test "skips non-image prompts" do

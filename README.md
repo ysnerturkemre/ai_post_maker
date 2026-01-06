@@ -1,24 +1,28 @@
-# README
+# AI Post Maker
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Development Setup
 
-Things you may want to cover:
+### Requirements
+- Ruby 3.4.x
+- PostgreSQL
+- Redis (for Sidekiq)
 
-* Ruby version
+### Environment
+Copy `.env.example` to `.env` and set at minimum:
+- `DATABASE_URL` (development)
+- `DATABASE_URL_TEST` (test)
+- `REDIS_URL`
 
-* System dependencies
+### Bootstrap
+```bash
+bundle install
+bin/rails db:setup
+```
 
-* Configuration
+### Run
+```bash
+bin/rails server
+bundle exec sidekiq
+```
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+ActiveStorage is configured for local disk in V1 (`storage/`).

@@ -87,9 +87,22 @@ class HomeController < ApplicationController
       prompt: post.prompt&.text,
       output_type: post.kind,
       created_at: post.created_at,
-      asset_url: asset&.file_url,
+      asset_url: asset_url_for(asset),
       caption: post.caption,
       error_message: post.data.is_a?(Hash) ? post.data["error"] : nil
     )
+  end
+
+  def asset_url_for(asset)
+    return if asset.blank?
+
+    if asset.file.attached?
+      url_for(asset.file)
+    else
+      asset.file_url
+    end
+  rescue => e
+    Rails.logger.warn("[HomeController] asset url error: #{e.message}")
+    asset.file_url
   end
 end

@@ -15,7 +15,13 @@ Rails.application.routes.draw do
     post :cancel, on: :member
   end
 
-  mount Sidekiq::Web => "/sidekiq"
+  if Rails.env.production?
+    authenticate :user do
+      mount Sidekiq::Web => "/sidekiq"
+    end
+  else
+    mount Sidekiq::Web => "/sidekiq"
+  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

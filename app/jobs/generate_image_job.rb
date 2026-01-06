@@ -1,4 +1,6 @@
 # app/jobs/generate_image_job.rb
+require "base64"
+require "stringio"
 class GenerateImageJob < ApplicationJob
   queue_as :default
   def perform(prompt_id, post_id = nil)
@@ -24,7 +26,9 @@ class GenerateImageJob < ApplicationJob
       width: generation[:width],
       height: generation[:height],
       order_index: next_order_index(post)
-    )
+    ).tap do |asset|
+      attach_asset_file(asset, generation[:url])
+    end
 
     post.update!(status: "generated")
   rescue AiHordeImageService::Canceled => e
@@ -49,6 +53,47 @@ class GenerateImageJob < ApplicationJob
 
   def next_order_index(post)
     post.assets.maximum(:order_index).to_i + 1
+  end
+
+  def attach_asset_file(asset, url)
+    return if url.blank? || asset.file.attached?
+
+    if url.to_s.start_with?("data:image")
+      attach_data_url(asset, url)
+    elsif url.to_s.start_with?("http")
+      attach_remote_url(asset, url)
+    end
+  rescue => e
+    Rails.logger.warn("[GenerateImageJob] ActiveStorage attach failed: #{e.message}")
+  end
+
+  def attach_data_url(asset, url)
+    header, encoded = url.split(",", 2)
+    return if encoded.blank?
+
+    content_type = header.to_s[/data:(.*?);base64/, 1] || "image/png"
+    data = Base64.decode64(encoded)
+    filename = "ai_post_#{asset.id}.png"
+
+    asset.file.attach(
+      io: StringIO.new(data),
+      filename: filename,
+      content_type: content_type
+    )
+  end
+
+  def attach_remote_url(asset, url)
+    require "open-uri"
+
+    file = URI.open(url)
+    filename = File.basename(URI.parse(url).path.presence || "ai_post_#{asset.id}.png")
+    content_type = file.respond_to?(:content_type) ? file.content_type : "image/png"
+
+    asset.file.attach(
+      io: file,
+      filename: filename,
+      content_type: content_type
+    )
   end
 
   def mark_processing(post, job_id)
