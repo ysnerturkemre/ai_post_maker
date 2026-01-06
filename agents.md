@@ -13,6 +13,14 @@ Your job is to implement requested features/fixes while STRICTLY following the p
 
 If any existing code contradicts these rules, keep backward compatibility but implement new work according to these rules.
 
+## 🚫 Ticket & Status Rules (Hard)
+
+- The agent MUST NOT change ticket status to "Done", "Completed", or equivalent without EXPLICIT user approval.
+- The agent MUST ask for approval before closing or marking any ticket as done.
+- If unsure, the agent must leave the ticket in "In Progress".
+- Silence is NOT approval.
+
+
 ## 🚫 Tailwind Policy (Strict)
 - Do NOT introduce Tailwind-based UI for new work (even if Tailwind exists in Gemfile/stylesheets).
 - Do NOT output Tailwind utility classes (e.g., flex, gap-4, text-gray-500, bg-blue-600).
