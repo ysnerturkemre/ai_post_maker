@@ -17,7 +17,7 @@
 
 ## Generation Flow (V1)
 - Prompt → Background Job
-- Status: queued → running → generated / failed / cancelled
+- Status: queued → processing → generated / failed / canceled
 - One output per request
 - Free providers only (AI Horde / local)
 
