@@ -1,4 +1,22 @@
+require "sidekiq/web"
+
 Rails.application.routes.draw do
+  devise_for :users, controllers: {
+    sessions: "users/sessions",
+    registrations: "users/registrations",
+    # passwords: "users/passwords" # Şifre sıfırlama akışı sonraki sürümde açılacak.
+  }
+  root "home#index"
+
+  # Home
+  get "/home", to: "home#index", as: :home
+  post "/home", to: "home#create"
+  resources :posts, only: [:destroy] do
+    post :cancel, on: :member
+  end
+
+  mount Sidekiq::Web => "/sidekiq"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -1,0 +1,60 @@
+tr:
+  devise:
+    confirmations:
+      confirmed: "E-posta adresin başarıyla doğrulandı."
+      send_instructions: "E-posta adresini doğrulamak için talimatları içeren bir e-posta alacaksın."
+      send_paranoid_instructions: "Eğer e-posta adresin sistemde kayıtlıysa, doğrulama talimatları gönderildi."
+    failure:
+      already_authenticated: "Zaten giriş yaptın."
+      inactive: "Hesabın henüz aktif değil."
+      invalid: "E-posta veya şifre hatalı."
+      locked: "Hesabın kilitlendi."
+      last_attempt: "Hesabın kilitlenmeden önce son deneme hakkın."
+      not_found_in_database: "E-posta veya şifre hatalı."
+      timeout: "Oturumun sona erdi, lütfen tekrar giriş yap."
+      unauthenticated: ""
+      unconfirmed: "Devam etmek için e-posta adresini doğrulamalısın."
+    mailer:
+      confirmation_instructions:
+        subject: "Hesabını doğrula"
+      reset_password_instructions:
+        subject: "Şifre sıfırlama talimatları"
+      unlock_instructions:
+        subject: "Hesap kilidini aç"
+      email_changed:
+        subject: "E-posta adresin güncellendi"
+      password_change:
+        subject: "Şifren değiştirildi"
+    omniauth_callbacks:
+      failure: "%{kind} ile giriş yapılamadı: \"%{reason}\"."
+      success: "%{kind} hesabıyla giriş yapıldı."
+    passwords:
+      no_token: "Bu sayfaya bir şifre sıfırlama bağlantısından gelmen gerekiyor."
+      send_instructions: "Birkaç dakika içinde şifre sıfırlama talimatları e-postana gelecek."
+      send_paranoid_instructions: "Eğer e-posta adresin sistemde kayıtlıysa, şifre sıfırlama bağlantısı gönderildi."
+      updated: "Şifren başarıyla değişti, giriş yapıldı."
+      updated_not_active: "Şifren başarıyla değişti."
+    registrations:
+      destroyed: "Hesabın silindi, tekrar görüşmek üzere."
+      signed_up: "Hoş geldin! Kayıt işlemi tamam."
+      signed_up_but_inactive: "Kayıt oldun fakat hesabın henüz aktif değil."
+      signed_up_but_locked: "Kayıt oldun fakat hesabın kilitli."
+      signed_up_but_unconfirmed: "Hesabını doğrulamak için e-posta adresine bir bağlantı gönderdik."
+      update_needs_confirmation: "E-posta adresini değiştirdin, doğrulamak için e-postadaki bağlantıyı takip etmelisin."
+      updated: "Hesap bilgileriniz güncellendi."
+      updated_but_not_signed_in: "Hesap güncellendi, ancak şifren değiştiği için tekrar giriş yapmalısın."
+    sessions:
+      signed_in: "Başarıyla giriş yapıldı."
+      signed_out: "Çıkış yapıldı."
+      already_signed_out: "Çıkış yapıldı."
+    unlocks:
+      send_instructions: "Hesap kilidini açmak için e-posta gönderildi."
+      send_paranoid_instructions: "Eğer hesabın varsa kilit açma talimatları gönderildi."
+      unlocked: "Hesap kilidi açıldı, lütfen giriş yap."
+  errors:
+    messages:
+      already_confirmed: "zaten doğrulanmış, giriş yapmayı dene"
+      confirmation_period_expired: "%{period} içinde doğrulanmalı, lütfen yeni bir doğrulama iste."
+      expired: "süresi doldu, lütfen yenisini iste"
+      not_found: "bulunamadı"
+      not_locked: "kilitli değil"

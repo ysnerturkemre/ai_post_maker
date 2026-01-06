@@ -28,4 +28,90 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  navbar:
+    title: "AI POST MAKER"
+    subtitle: "Create & share AI-powered Instagram content"
+    plan_label: "Free Plan"
+    user_placeholder: "User"
+    logout: "Log out"
+    language_label: "Language"
+    languages:
+      tr: "Turkish"
+      en: "English"
+  panels:
+    create:
+      title: "Create content"
+      badge: "manual"
+      prompt_label: "Prompt"
+      prompt_placeholder: "E.g. Write a friendly Instagram post about AI with 3 tips..."
+      output_label: "Output type"
+      image_label: "Image"
+      video_label: "Video"
+      submit: "Create"
+    recent:
+      title: "Latest content"
+      subtitle: "Recent creations"
+      share: "Share on Instagram"
+      download: "Download"
+      empty: "You haven't generated content yet."
+      badge_generated: "generated"
+      sample: "Sample content %{index}"
+      pending_with_status: "Generating (%{status})"
+      error_label: "Error"
+      default_error: "A problem occurred during generation."
+      delete_button: "Delete request"
+      delete_confirm: "Are you sure you want to delete this request?"
+      statuses:
+        draft: "draft"
+        queued: "queued"
+        generated: "ready"
+        published: "published"
+        failed: "failed"
+    status:
+      title: "Generation status"
+      empty: "No generation yet."
+      current_prompt: "Prompt"
+      progress_label: "Image"
+      asset_ready: "Ready"
+      asset_pending: "Not generated yet"
+      error_label: "Error"
+      dashboard_asset_pending: "Not generated yet"
+      dashboard_asset_ready: "Generated"
+      statuses:
+        draft: "draft"
+        queued: "queued"
+        generated: "ready"
+        published: "published"
+        failed: "failed"
+  auth:
+    sign_in:
+      title: "Sign in"
+      subtitle: "Sign in to continue."
+      email: "Email"
+      email_placeholder: "name@email.com"
+      password: "Password"
+      password_placeholder: "••••••••"
+      remember_me: "Remember me"
+      forgot_password: "Forgot password?"
+      submit: "Sign in"
+      no_account: "Don't have an account?"
+      sign_up: "Sign up"
+  flash:
+    sessions:
+      signed_in: "Signed in successfully."
+      wrong_credentials: "Email or password is incorrect."
+      email_not_found: "No user found with this email. Please sign up."
+    home:
+      enqueued: "AI caption generation queued."
+      save_failed: "Prompt could not be saved. Please check the fields."
+      error: "Error: %{message}"
+    posts:
+      deleted: "Request deleted."
+      delete_failed: "Could not delete request."
+  dashboard:
+    cancel_job: "Cancel generation"
+    cancel_confirm: "Do you want to cancel this generation?"
+    cancel_success: "Generation canceled."
+    cancel_failed: "Could not cancel generation."
+    asset_pending: "Not generated yet"
+    asset_ready: "Generated"

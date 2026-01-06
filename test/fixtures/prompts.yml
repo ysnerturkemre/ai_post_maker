@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  text: "A friendly prompt"
+  lang: "tr"
+  tone: "friendly"
+  kind: "image"
+
+two:
+  text: "Another prompt"
+  lang: "en"
+  tone: "formal"
+  kind: "video"

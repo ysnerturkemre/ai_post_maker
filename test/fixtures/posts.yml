@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  prompt: one
+  caption: "Draft caption"
+  status: "queued"
+  kind: "image"
+  data: {}
+  published_at:
+  scheduled_at:
+
+two:
+  prompt: two
+  caption: "Video caption"
+  status: "generated"
+  kind: "video"
+  data: {}
+  published_at:
+  scheduled_at:

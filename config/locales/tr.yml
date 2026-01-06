@@ -1,0 +1,118 @@
+tr:
+  activerecord:
+    attributes:
+      user:
+        email: "E-posta"
+        password: "Şifre"
+        password_confirmation: "Şifre (tekrar)"
+  navbar:
+    title: "AI POST MAKER"
+    subtitle: "Create & share AI-powered Instagram content"
+    plan_label: "Free Plan"
+    user_placeholder: "Kullanıcı"
+    logout: "Çıkış"
+    language_label: "Dil"
+    languages:
+      tr: "Türkçe"
+      en: "English"
+  panels:
+    create:
+      title: "İçerik üret"
+      badge: "manual"
+      prompt_label: "Prompt"
+      prompt_placeholder: "Örn: Yapay zekâ ile ilgili 3 ipuçlu, samimi bir Instagram postu yaz..."
+      output_label: "Çıktı türü"
+      image_label: "Görsel"
+      video_label: "Video"
+      submit: "Oluştur"
+    recent:
+      title: "Son içerik"
+      subtitle: "Son üretimler"
+      share: "Instagram’da paylaş"
+      download: "İndir"
+      empty: "Henüz içerik üretmedin."
+      badge_generated: "generated"
+      sample: "Örnek içerik %{index}"
+      pending_with_status: "Üretim sürüyor (%{status})"
+      error_label: "Hata"
+      default_error: "Üretim sırasında bir hata oluştu."
+      delete_button: "İsteği sil"
+      delete_confirm: "Bu isteği silmek istediğine emin misin?"
+      statuses:
+        draft: "taslak"
+        queued: "kuyrukta"
+        generated: "hazır"
+        published: "paylaşıldı"
+        failed: "hata"
+    status:
+      title: "Üretim durumu"
+      empty: "Henüz bir üretim yok."
+      current_prompt: "Prompt"
+      progress_label: "Görsel"
+      asset_ready: "Hazır"
+      asset_pending: "Henüz üretilmedi"
+      error_label: "Hata"
+      # Dashboard overrides
+      dashboard_asset_pending: "Henüz üretilmedi"
+      dashboard_asset_ready: "Üretildi"
+      statuses:
+        draft: "taslak"
+        queued: "kuyrukta"
+        generated: "hazır"
+        published: "paylaşıldı"
+        failed: "hata"
+  auth:
+    sign_in:
+      title: "Giriş Yap"
+      subtitle: "Hesabına giriş yap ve devam et."
+      email: "E-posta"
+      email_placeholder: "ornek@mail.com"
+      password: "Şifre"
+      password_placeholder: "••••••••"
+      remember_me: "Beni hatırla"
+      forgot_password: "Şifremi unuttum"
+      submit: "Giriş Yap"
+      no_account: "Hesabın yok mu?"
+      sign_up: "Kayıt ol"
+  flash:
+    sessions:
+      signed_in: "Giriş başarılı."
+      wrong_credentials: "E-posta veya şifre yanlış."
+      email_not_found: "Bu e-posta ile kullanıcı bulunamadı. Lütfen kayıt olunuz."
+    home:
+      enqueued: "AI caption oluşturma kuyruğa alındı."
+      save_failed: "Prompt kaydedilemedi. Lütfen alanları kontrol edin."
+      error: "Hata: %{message}"
+    posts:
+      deleted: "İstek silindi."
+      delete_failed: "İstek silinirken hata oluştu."
+  dashboard:
+    cancel_job: "Üretimi iptal et"
+    cancel_confirm: "Bu üretimi iptal etmek istiyor musun?"
+    cancel_success: "Üretim iptal edildi."
+    cancel_failed: "Üretim iptal edilirken hata oluştu."
+    asset_pending: "Henüz üretilmedi"
+    asset_ready: "Üretildi"
+  time:
+    formats:
+      short: "%d %b %H:%M"
+  date:
+    abbr_month_names:
+      - ""
+      - Oca
+      - Şub
+      - Mar
+      - Nis
+      - May
+      - Haz
+      - Tem
+      - Ağu
+      - Eyl
+      - Eki
+      - Kas
+      - Ara
+  errors:
+    messages:
+      confirmation: "%{attribute} eşleşmiyor."
+      too_short: "%{attribute} çok kısa (en az %{count} karakter olmalı)."
+      confirmation: "%{attribute} şifre ile eşleşmiyor."
