@@ -54,6 +54,8 @@ en:
       subtitle: "Recent creations"
       share: "Share on Instagram"
       download: "Download"
+      copy_caption: "Copy caption"
+      copy_done: "Copied!"
       empty: "You haven't generated content yet."
       badge_generated: "generated"
       sample: "Sample content %{index}"

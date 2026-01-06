@@ -88,6 +88,7 @@ class HomeController < ApplicationController
       output_type: post.kind,
       created_at: post.created_at,
       asset_url: asset&.file_url,
+      caption: post.caption,
       error_message: post.data.is_a?(Hash) ? post.data["error"] : nil
     )
   end

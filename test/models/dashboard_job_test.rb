@@ -13,6 +13,7 @@ class DashboardJobTest < ActiveSupport::TestCase
       output_type: "image",
       created_at: Time.current,
       asset_url: nil,
+      caption: "Caption",
       error_message: nil
     )
 
@@ -28,6 +29,7 @@ class DashboardJobTest < ActiveSupport::TestCase
       output_type: "image",
       created_at: nil,
       asset_url: nil,
+      caption: nil,
       error_message: nil
     )
 

@@ -26,6 +26,7 @@ module Dashboard
             div class: "card-body d-flex flex-column gap-2 h-100" do
               div class: "d-flex flex-column gap-2 flex-grow-1" do
                 p(class: "mb-0 small text-muted") { truncate(@job.prompt.to_s, length: 80) }
+                caption_snippet
                 mini_meta
                 created_at_text
               end
@@ -55,6 +56,12 @@ module Dashboard
           end
         end
       end
+    end
+
+    def caption_snippet
+      return if @job.caption.blank?
+
+      p(class: "mb-0 small text-white-50") { truncate(@job.caption.to_s, length: 80) }
     end
 
     def created_at_text
@@ -88,8 +95,49 @@ module Dashboard
       return unless @job.respond_to?(:id) && @job.id.present?
 
       div class: "d-grid gap-2" do
+        download_button
+        copy_button
+        share_button
         cancel_button
         delete_button
+      end
+    end
+
+    def download_button
+      return if @job.asset_url.blank?
+
+      a href: @job.asset_url,
+        class: "btn btn-outline-light btn-sm w-100",
+        download: true,
+        target: "_blank",
+        rel: "noopener" do
+        I18n.t("panels.recent.download")
+      end
+    end
+
+    def copy_button
+      return if @job.caption.blank?
+
+      button class: "btn btn-outline-light btn-sm w-100",
+        type: "button",
+        data: {
+          controller: "clipboard",
+          action: "clipboard#copy",
+          clipboard_text_value: @job.caption,
+          clipboard_copied_label_value: I18n.t("panels.recent.copy_done")
+        } do
+        I18n.t("panels.recent.copy_caption")
+      end
+    end
+
+    def share_button
+      return if @job.asset_url.blank? && @job.caption.blank?
+
+      a href: "https://www.instagram.com/",
+        class: "btn btn-outline-light btn-sm w-100",
+        target: "_blank",
+        rel: "noopener" do
+        I18n.t("panels.recent.share")
       end
     end
 

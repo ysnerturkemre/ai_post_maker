@@ -31,6 +31,8 @@ tr:
       subtitle: "Son üretimler"
       share: "Instagram’da paylaş"
       download: "İndir"
+      copy_caption: "Açıklamayı kopyala"
+      copy_done: "Kopyalandı!"
       empty: "Henüz içerik üretmedin."
       badge_generated: "generated"
       sample: "Örnek içerik %{index}"
