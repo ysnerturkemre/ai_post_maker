@@ -52,3 +52,6 @@ yarn-debug.log*
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# === Beads runtime ===
+.beads/bd.sock.startlock

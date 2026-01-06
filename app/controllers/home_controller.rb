@@ -10,11 +10,9 @@ class HomeController < ApplicationController
     @prompt = Prompt.new(prompt_params)
 
     if @prompt.save
-      post = nil
-      if @prompt.image?
-        post = @prompt.posts.create!(status: "queued", kind: @prompt.kind)
-        GenerateImageJob.perform_later(@prompt.id, post.id)
-      end
+      post = @prompt.posts.create!(status: "queued", kind: @prompt.kind)
+
+      GenerateImageJob.perform_later(@prompt.id, post.id) if @prompt.image?
 
       GenerateCaptionJob.perform_later(@prompt.id)
       respond_to do |format|
