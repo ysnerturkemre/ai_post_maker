@@ -1,0 +1,7 @@
+{
+  "name": "ai_post_maker",
+  "private": true,
+  "scripts": {
+    "beads-ui": "npx beads-ui start --port 7331"
+  }
+}
