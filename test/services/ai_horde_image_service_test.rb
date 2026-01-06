@@ -52,6 +52,7 @@ class AiHordeImageServiceTest < ActiveSupport::TestCase
     assert_equal "https://cdn.example.com/img.png", result[:url]
     assert_equal 512, result[:width]
     assert_equal 512, result[:height]
+    assert_equal "job_1", result[:job_id]
   end
 
   test "normalizes base64 image data" do
@@ -113,6 +114,27 @@ class AiHordeImageServiceTest < ActiveSupport::TestCase
 
     assert_raises(AiHordeImageService::Error) do
       service.call
+    end
+  end
+
+  test "raises canceled when canceled callback returns true" do
+    post_response = FakeResponse.new(
+      200,
+      { "id" => "job_5" },
+      FakeEnv.new("https://aihorde.net/api/v2/generate/async")
+    )
+    status_response = FakeResponse.new(
+      200,
+      { "generations" => [] },
+      FakeEnv.new("https://aihorde.net/api/v2/generate/check/job_5")
+    )
+    client = FakeClient.new(post_response: post_response, get_responses: [status_response])
+
+    service = AiHordeImageService.new(prompt_text: "Hello", aspect: :square)
+    service.instance_variable_set(:@client, client)
+
+    assert_raises(AiHordeImageService::Canceled) do
+      service.call(canceled: -> { true })
     end
   end
 end

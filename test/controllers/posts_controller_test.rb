@@ -30,11 +30,20 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "cancel marks post as failed" do
+  test "cancel marks post as canceled" do
     post = posts(:one)
 
     post cancel_post_path(post)
 
-    assert_equal "failed", post.reload.status
+    assert_equal "canceled", post.reload.status
+  end
+
+  test "cancel does not change non-cancelable posts" do
+    post = posts(:two)
+    post.update!(status: "generated")
+
+    post cancel_post_path(post)
+
+    assert_equal "generated", post.reload.status
   end
 end

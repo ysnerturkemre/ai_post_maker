@@ -37,17 +37,16 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path(locale: I18n.locale)
   end
 
-  test "should create prompt and enqueue only caption job for video" do
+  test "rejects video prompt requests" do
     sign_in users(:one)
-    assert_difference -> { Prompt.count }, 1 do
+    assert_no_difference -> { Prompt.count } do
       assert_no_difference -> { Post.count } do
-        assert_enqueued_jobs 1 do
+        assert_enqueued_jobs 0 do
           post home_path, params: { prompt: { text: "Video prompt", kind: "video" } }
         end
       end
     end
-    assert_enqueued_with(job: GenerateCaptionJob)
-    assert_redirected_to root_path(locale: I18n.locale)
+    assert_response :unprocessable_entity
   end
 
   test "rejects blank prompt" do

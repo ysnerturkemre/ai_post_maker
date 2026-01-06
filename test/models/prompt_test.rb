@@ -12,8 +12,9 @@ class PromptTest < ActiveSupport::TestCase
     assert_equal "image", prompt.kind
   end
 
-  test "accepts video kind" do
+  test "rejects video kind" do
     prompt = Prompt.new(text: "Hello", kind: "video")
-    assert prompt.valid?
+    assert_not prompt.valid?
+    assert prompt.errors[:kind].present?
   end
 end
