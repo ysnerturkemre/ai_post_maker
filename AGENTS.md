@@ -28,6 +28,13 @@ When editing any file that contains Tailwind:
 - If full conversion is too large, convert at least the changed/adjacent sections and clearly note remaining Tailwind areas.
 
 ---
+## Context Enforcement
+All agents MUST:
+- Read docs/context.md before coding
+- Treat it as authoritative documentation
+- Prefer existing patterns over assumptions
+- Stop and ask if context is missing
+
 
 ## 🧠 Task Management — Beads (MANDATORY)
 

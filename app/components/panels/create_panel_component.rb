@@ -34,8 +34,12 @@ class Panels::CreatePanelComponent < ApplicationComponent
             "video",
             label: I18n.t("panels.create.video_label"),
             inline: true,
-            wrapper_class: "text-white",
-            label_class: "ms-1 fw-semibold text-white"
+            wrapper_class: "text-white-50",
+            label_class: "ms-1 fw-semibold text-white-50",
+            disabled: true
+        end
+        div class: "form-text text-white-50 mt-1" do
+          I18n.t("panels.create.video_help")
         end
       end
 

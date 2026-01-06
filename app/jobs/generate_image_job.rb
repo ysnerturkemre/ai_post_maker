@@ -5,11 +5,17 @@ class GenerateImageJob < ApplicationJob
     prompt = Prompt.find(prompt_id)
     return unless prompt.image?
 
-    post = nil
     post = locate_post(prompt, post_id)
+    return if post.canceled?
     post.update!(status: "queued") if post.draft?
 
-    generation = AiHordeImageService.new(prompt_text: prompt.text, aspect: :square).call
+    generation = AiHordeImageService.new(prompt_text: prompt.text, aspect: :square).call(
+      canceled: -> { post.reload.canceled? }
+    ) do |job_id|
+      mark_processing(post, job_id)
+    end
+
+    return if post.reload.canceled?
     raise AiHordeImageService::Error, "Görsel URL alınamadı." if generation[:url].blank?
 
     post.assets.create!(
@@ -21,6 +27,8 @@ class GenerateImageJob < ApplicationJob
     )
 
     post.update!(status: "generated")
+  rescue AiHordeImageService::Canceled => e
+    mark_canceled(post, e.message)
   rescue AiHordeImageService::Error => e
     mark_failed(post, e.message)
     Rails.logger.error("[GenerateImageJob] AI Horde: #{e.message}")
@@ -43,11 +51,32 @@ class GenerateImageJob < ApplicationJob
     post.assets.maximum(:order_index).to_i + 1
   end
 
+  def mark_processing(post, job_id)
+    return unless post&.persisted?
+
+    post.update!(
+      status: "processing",
+      data: merge_data(post, "ai_horde_job_id" => job_id)
+    )
+  end
+
   def mark_failed(post, message = nil)
     return unless post&.persisted?
 
+    post.update(status: "failed", data: merge_data(post, "error" => message))
+  end
+
+  def mark_canceled(post, message = nil)
+    return unless post&.persisted?
+
+    post.update(
+      status: "canceled",
+      data: merge_data(post, "error" => message, "canceled_at" => Time.current)
+    )
+  end
+
+  def merge_data(post, extra)
     safe_data = post.data.is_a?(Hash) ? post.data : {}
-    merged_data = safe_data.merge("error" => message).compact
-    post.update(status: "failed", data: merged_data)
+    safe_data.merge(extra).compact
   end
 end

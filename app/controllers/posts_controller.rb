@@ -25,7 +25,34 @@ class PostsController < ApplicationController
 
   def cancel
     @post = Post.find(params[:id])
-    @post.update!(status: "failed")
+    if @post.canceled?
+      respond_to do |format|
+        format.html { redirect_to home_path, notice: I18n.t("dashboard.cancel_success") }
+        format.turbo_stream { redirect_to home_path }
+      end
+      return
+    end
+
+    unless @post.cancelable?
+      respond_to do |format|
+        format.html { redirect_to home_path, alert: I18n.t("dashboard.cancel_failed") }
+        format.turbo_stream { redirect_to home_path }
+      end
+      return
+    end
+
+    job_id = @post.data.is_a?(Hash) ? @post.data["ai_horde_job_id"] : nil
+    if job_id.present?
+      begin
+        AiHordeImageService.new.cancel(job_id)
+      rescue AiHordeImageService::Error => e
+        Rails.logger.error("[PostsController#cancel] AI Horde: #{e.message}")
+      end
+    end
+    @post.update!(
+      status: "canceled",
+      data: merge_data(@post, "canceled_at" => Time.current)
+    )
 
     respond_to do |format|
       format.html { redirect_to home_path, notice: I18n.t("dashboard.cancel_success") }
@@ -37,5 +64,12 @@ class PostsController < ApplicationController
       format.html { redirect_to home_path, alert: I18n.t("dashboard.cancel_failed") }
       format.turbo_stream { redirect_to home_path }
     end
+  end
+
+  private
+
+  def merge_data(post, extra)
+    safe_data = post.data.is_a?(Hash) ? post.data : {}
+    safe_data.merge(extra).compact
   end
 end

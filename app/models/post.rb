@@ -5,11 +5,17 @@ class Post < ApplicationRecord
   enum :status, {
     draft: "draft",
     generated: "generated",
+    processing: "processing",
     queued: "queued",
     published: "published",
-    failed: "failed"
+    failed: "failed",
+    canceled: "canceled"
   }, default: "draft"
 
   enum :kind, {
     image: "image", video: "video" }, default: "image"
+
+  def cancelable?
+    queued? || processing?
+  end
 end

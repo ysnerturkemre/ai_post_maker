@@ -17,7 +17,7 @@ module Dashboard
           media_block
           prompt_block
           meta_block
-          delete_button
+          action_buttons
         end
       end
     end
@@ -80,8 +80,9 @@ module Dashboard
       case status.to_s
       when "queued" then "bg-warning text-dark"
       when "processing" then "bg-info text-dark"
+      when "generated", "published" then "bg-success"
       when "failed" then "bg-danger"
-      when "completed" then "bg-success"
+      when "canceled" then "bg-secondary"
       else "bg-secondary"
       end
     end
@@ -94,17 +95,37 @@ module Dashboard
       kind.to_s == "video" ? I18n.t("panels.create.video_label") : I18n.t("panels.create.image_label")
     end
 
-    def delete_button
+    def action_buttons
       return unless @job.respond_to?(:id) && @job.id.present?
 
-      div class: "d-flex justify-content-end" do
-        button_to post_path(@job.id),
-          method: :delete,
-          class: "btn btn-outline-danger btn-sm",
-          data: { turbo_confirm: I18n.t("panels.recent.delete_confirm") } do
-          I18n.t("panels.recent.delete_button")
-        end
+      div class: "d-flex flex-wrap gap-2 justify-content-end" do
+        cancel_button
+        delete_button
       end
+    end
+
+    def cancel_button
+      return unless cancelable?
+
+      button_to cancel_post_path(@job.id),
+        method: :post,
+        class: "btn btn-outline-warning btn-sm",
+        data: { turbo_confirm: I18n.t("dashboard.cancel_confirm") } do
+        I18n.t("dashboard.cancel_job")
+      end
+    end
+
+    def delete_button
+      button_to post_path(@job.id),
+        method: :delete,
+        class: "btn btn-outline-danger btn-sm",
+        data: { turbo_confirm: I18n.t("panels.recent.delete_confirm") } do
+        I18n.t("panels.recent.delete_button")
+      end
+    end
+
+    def cancelable?
+      %w[queued processing].include?(@job.status.to_s)
     end
   end
 end

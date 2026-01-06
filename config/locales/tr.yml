@@ -24,6 +24,7 @@ tr:
       output_label: "Çıktı türü"
       image_label: "Görsel"
       video_label: "Video"
+      video_help: "Video üretimi yakında."
       submit: "Oluştur"
     recent:
       title: "Son içerik"
@@ -41,9 +42,11 @@ tr:
       statuses:
         draft: "taslak"
         queued: "kuyrukta"
+        processing: "işleniyor"
         generated: "hazır"
         published: "paylaşıldı"
         failed: "hata"
+        canceled: "iptal edildi"
     status:
       title: "Üretim durumu"
       empty: "Henüz bir üretim yok."
@@ -58,9 +61,14 @@ tr:
       statuses:
         draft: "taslak"
         queued: "kuyrukta"
+        processing: "işleniyor"
         generated: "hazır"
         published: "paylaşıldı"
         failed: "hata"
+        canceled: "iptal edildi"
+  prompts:
+    errors:
+      video_not_supported: "Video üretimi henüz aktif değil."
   auth:
     sign_in:
       title: "Giriş Yap"

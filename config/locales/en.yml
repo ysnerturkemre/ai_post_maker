@@ -47,6 +47,7 @@ en:
       output_label: "Output type"
       image_label: "Image"
       video_label: "Video"
+      video_help: "Video generation is coming soon."
       submit: "Create"
     recent:
       title: "Latest content"
@@ -64,9 +65,11 @@ en:
       statuses:
         draft: "draft"
         queued: "queued"
+        processing: "processing"
         generated: "ready"
         published: "published"
         failed: "failed"
+        canceled: "canceled"
     status:
       title: "Generation status"
       empty: "No generation yet."
@@ -80,9 +83,14 @@ en:
       statuses:
         draft: "draft"
         queued: "queued"
+        processing: "processing"
         generated: "ready"
         published: "published"
         failed: "failed"
+        canceled: "canceled"
+  prompts:
+    errors:
+      video_not_supported: "Video generation is not available yet."
   auth:
     sign_in:
       title: "Sign in"

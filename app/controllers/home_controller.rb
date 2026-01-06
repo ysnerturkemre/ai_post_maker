@@ -69,7 +69,7 @@ class HomeController < ApplicationController
 
   # Recent jobs = kuyruktaki ve tamamlanan/başarısız olan Post'lar
   def dashboard_jobs
-    recent_statuses = %w[queued generated published failed canceled]
+    recent_statuses = %w[queued processing generated published failed canceled]
 
     recent_posts = Post.includes(:assets, :prompt)
       .where(status: recent_statuses)
@@ -83,25 +83,12 @@ class HomeController < ApplicationController
     asset = post.assets.first
     DashboardJob.new(
       id: post.id,
-      status: normalize_status(post.status),
+      status: post.status,
       prompt: post.prompt&.text,
       output_type: post.kind,
       created_at: post.created_at,
       asset_url: asset&.file_url,
       error_message: post.data.is_a?(Hash) ? post.data["error"] : nil
     )
-  end
-
-  def normalize_status(status)
-    case status.to_s
-    when "generated", "published"
-      "completed"
-    when "failed"
-      "failed"
-    when "canceled"
-      "canceled"
-    else
-      status
-    end
   end
 end

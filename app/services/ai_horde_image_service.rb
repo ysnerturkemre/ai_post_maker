@@ -1,6 +1,7 @@
 # app/services/ai_horde_image_service.rb
 class AiHordeImageService
   class Error < StandardError; end
+  class Canceled < Error; end
 
   API_BASE_URL = ENV.fetch("AI_HORDE_API_BASE_URL", "https://aihorde.net/api/v2")
   DEFAULT_MODEL = ENV.fetch("AI_HORDE_MODEL", "SDXL 1.0")
@@ -16,17 +17,32 @@ class AiHordeImageService
     landscape: { width: 1024, height: 704 }
   }.freeze
 
-  def initialize(prompt_text:, aspect: :square)
+  def initialize(prompt_text: nil, aspect: :square)
     @prompt_text = prompt_text
     @aspect = aspect&.to_sym
   end
 
-  def call
+  def call(canceled: nil)
     raise Error, "Prompt metni boş olamaz." if @prompt_text.blank?
 
     job_id = queue_generation
-    generation = wait_for_generation(job_id)
-    format_generation(generation)
+    yield(job_id) if block_given?
+    generation = wait_for_generation(job_id, canceled: canceled)
+    format_generation(generation).merge(job_id: job_id)
+  end
+
+  def cancel(job_id)
+    return false if job_id.blank?
+
+    response = client.delete("generate/status/#{job_id}") do |req|
+      req.headers.update(default_headers)
+    end
+
+    return true if response.success?
+
+    raise Error, "AI Horde iptal isteği başarısız: HTTP #{response.status}"
+  rescue Faraday::Error => e
+    raise Error, "AI Horde iptal isteği başarısız: #{e.message}"
   end
 
   private
@@ -43,10 +59,12 @@ class AiHordeImageService
     raise Error, "AI Horde isteği başarısız: #{e.message}"
   end
 
-  def wait_for_generation(job_id)
+  def wait_for_generation(job_id, canceled: nil)
     deadline = Time.current + POLL_TIMEOUT.seconds
 
     loop do
+      raise Canceled, "AI Horde isteği iptal edildi." if canceled&.call
+
       status = fetch_status(job_id)
       generations = Array(status["generations"])
       return generations.first if generations.any?
