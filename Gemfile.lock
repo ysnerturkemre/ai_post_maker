@@ -202,10 +202,11 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.6.2-x86_64-linux)
-    phlex (2.3.1)
+    phlex (2.4.0)
+      refract (~> 1.0)
       zeitwerk (~> 2.7)
-    phlex-rails (2.3.1)
-      phlex (~> 2.3.0)
+    phlex-rails (2.4.0)
+      phlex (~> 2.4.0)
       railties (>= 7.1, < 9)
       zeitwerk (~> 2.7)
     pp (0.6.3)
@@ -272,6 +273,9 @@ GEM
       redis-client (>= 0.22.0)
     redis-client (0.26.1)
       connection_pool
+    refract (1.1.0)
+      prism
+      zeitwerk
     regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
@@ -376,7 +380,7 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.7.3)
+    zeitwerk (2.7.4)
 
 PLATFORMS
   x86_64-linux
