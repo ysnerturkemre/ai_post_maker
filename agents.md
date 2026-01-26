@@ -13,8 +13,9 @@ Your job is to implement requested features/fixes while STRICTLY following the p
 
 If any existing code contradicts these rules, keep backward compatibility but implement new work according to these rules.
 
-## 🚫 Ticket & Status Rules (Hard)
+---
 
+## 🚫 Ticket & Status Rules (Hard)
 - The agent MUST NOT change ticket status to "Done", "Completed", or equivalent without EXPLICIT user approval.
 - The agent MUST ask for approval before closing or marking any ticket as done.
 - If unsure, the agent must leave the ticket in "In Progress".
@@ -47,6 +48,8 @@ Ticket completion rules are STRICT and must be followed.
 
 Violating these rules breaks project tracking integrity.
 
+---
+
 ## 🚫 Tailwind Policy (Strict)
 - Do NOT introduce Tailwind-based UI for new work (even if Tailwind exists in Gemfile/stylesheets).
 - Do NOT output Tailwind utility classes (e.g., flex, gap-4, text-gray-500, bg-blue-600).
@@ -69,6 +72,8 @@ All agents MUST:
 - Treat it as authoritative documentation
 - Prefer existing patterns over assumptions
 - Stop and ask if context is missing
+
+---
 
 ## Product Vision & Roadmap (Authoritative)
 
@@ -102,7 +107,7 @@ Non-goals (explicitly out of scope for V1):
 - Provider fallback & retries
 - Better UX polish
 - Basic analytics
-- **Optional: Gemini caption provider as a paid/optional upgrade**
+- Optional: Gemini caption provider as a paid/optional upgrade
 
 ### V3 – Monetization & Scale
 - Token-based usage
@@ -110,13 +115,61 @@ Non-goals (explicitly out of scope for V1):
 - Team / multi-account support
 - Advanced analytics
 
+---
+
+## Docker Architecture (V1)
+
+This project intentionally uses **two separate Docker stacks**:
+
+### 1) Application Stack (Rails)
+Location: `~/projeler/ai_post_maker`
+
+Services:
+- Rails (web)
+- Sidekiq
+- PostgreSQL
+- Redis
+
+Responsibilities:
+- UI and user flow
+- Job orchestration
+- Database persistence
+- ActiveStorage management
+- Polling AI job status and attaching outputs
+
+This stack MUST NOT require GPU access.
+
+### 2) AI Stack (ComfyUI)
+Location: `~/ai/comfyui`
+
+Services:
+- ComfyUI (GPU-enabled)
+
+Responsibilities:
+- Image generation (SDXL)
+- Video generation (AnimateDiff / SVD)
+- Writing generated files to the shared output directory
+
+GPU access is exclusive to this stack.
+
+### Communication
+- Rails communicates with ComfyUI via HTTP:
+  - Endpoint: `http://localhost:8188`
+  - Flow: submit prompt/workflow → poll job → read output file
+- Generated assets are read from:
+  - `~/ai/comfyui/output`
+
+This architecture is mandatory for V1 unless explicitly changed by the user.
+
+---
+
 ## 🧠 AI Provider – ComfyUI (V1)
 
 V1 uses **ComfyUI** as the single generation backend for both image and video.
 
 Runtime:
 - Runs locally via Docker (WSL2) with NVIDIA GPU enabled
-- ComfyUI UI endpoint: http://localhost:8188
+- UI endpoint: http://localhost:8188
 
 Integration Contract (Rails → ComfyUI):
 - Rails submits prompt + workflow JSON via HTTP
@@ -134,7 +187,9 @@ Status lifecycle:
 Notes:
 - Models are stored locally and mounted into the ComfyUI container
 - V1 does NOT use any external AI APIs
-- Gemini integration is allowed **only in V2** (optional upgrade)
+- Gemini integration is allowed only in V2 (optional upgrade)
+
+---
 
 ## 📚 Context7 — Mandatory Documentation Source (HARD RULE)
 
@@ -158,24 +213,26 @@ Notes:
 - You MUST NOT invent APIs, methods, filenames, configs, commands, or behaviors.
 
 ### Evidence Requirement (MANDATORY)
-- For every non-trivial implementation or decision, you MUST include a short section in your answer:
+For every non-trivial implementation or decision, you MUST include a short section in your answer:
 
-  ## Evidence
-  - Source: docs/context.md (file path + section), OR
-  - Source: Context7 (doc title or short snippet), OR
-  - Source: Existing code (file path)
+## Evidence
+- Source: docs/context.md (file path + section), OR
+- Source: Context7 (doc title or short snippet), OR
+- Source: Existing code (file path)
 
 ### Enforcement
-- If you cannot access Context7 or cannot find the information there, you must say exactly:
-  "I cannot find this in docs/context.md, the current codebase, or Context7. I need clarification."
+If you cannot access Context7 or cannot find the information there, you must say exactly:
+"I cannot find this in docs/context.md, the current codebase, or Context7. I need clarification."
 
-- You MUST NOT proceed with implementation without Evidence.
+You MUST NOT proceed with implementation without Evidence.
+
+---
 
 ## 🧠 Task Management — Beads (MANDATORY)
 
 This repository uses **Beads (`bd`) as the single source of truth** for planning, task tracking, and agent workflow.
 
 ### 🔒 Beads Workflow Rules (STRICT)
-1) **Before starting ANY work**, you MUST run:
+1) Before starting ANY work, you MUST run:
    ```bash
    bd ready
