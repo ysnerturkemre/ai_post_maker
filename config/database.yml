@@ -26,8 +26,12 @@ development:
   <<: *default
 
 test:
-  <<: *default
-  url: <%= ENV["DATABASE_URL_TEST"] || "postgres://efor:123456@127.0.0.1:5432/ai_post_maker_test" %>
+  adapter: postgresql
+  database: ai_post_maker_test
+  host: 127.0.0.1
+  port: 5432
+  username: efor
+  password: 123456
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

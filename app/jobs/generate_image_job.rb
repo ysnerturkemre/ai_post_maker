@@ -1,5 +1,6 @@
 # app/jobs/generate_image_job.rb
 require "base64"
+require "open-uri"
 require "stringio"
 class GenerateImageJob < ApplicationJob
   queue_as :default
@@ -83,9 +84,8 @@ class GenerateImageJob < ApplicationJob
   end
 
   def attach_remote_url(asset, url)
-    require "open-uri"
-
     file = URI.open(url)
+    file.rewind if file.respond_to?(:rewind)
     filename = File.basename(URI.parse(url).path.presence || "ai_post_#{asset.id}.png")
     content_type = file.respond_to?(:content_type) ? file.content_type : "image/png"
 

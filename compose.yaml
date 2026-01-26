@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: efor
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: ai_post_maker_development
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://efor:123456@db:5432/ai_post_maker_development
+      REDIS_URL: redis://redis:6379/1
+    volumes:
+      - .:/rails
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+
+  sidekiq:
+    build: .
+    command: ["bundle", "exec", "sidekiq"]
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://efor:123456@db:5432/ai_post_maker_development
+      REDIS_URL: redis://redis:6379/1
+    volumes:
+      - .:/rails
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  pgdata:

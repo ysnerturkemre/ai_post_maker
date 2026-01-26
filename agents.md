@@ -19,6 +19,33 @@ If any existing code contradicts these rules, keep backward compatibility but im
 - The agent MUST ask for approval before closing or marking any ticket as done.
 - If unsure, the agent must leave the ticket in "In Progress".
 - Silence is NOT approval.
+## Beads Ticket Completion Policy (MANDATORY)
+
+This project uses Beads for planning and execution tracking.
+Ticket completion rules are STRICT and must be followed.
+
+### Dependency Semantics
+- "Depends on" = PARENT tickets
+- "Blocking" = CHILD tickets
+
+### Completion Rules
+1) ONLY close the ticket that was explicitly implemented.
+2) NEVER auto-close dependency tickets listed under "Depends on".
+3) NEVER close parent tickets or epics unless explicitly instructed by the user.
+4) Completing a child ticket does NOT imply its parent is complete.
+5) Epics are closed manually by the user only, after all child tickets are done.
+
+### Practical Rule of Thumb
+- If a ticket has "Depends on" entries → it is a CHILD → you may close ONLY this ticket.
+- If a ticket has "Blocking" entries → it is a PARENT → DO NOT close it.
+
+### Enforcement
+- Do not ask to close dependencies.
+- Do not suggest bulk or cascading closures.
+- When in doubt, leave tickets OPEN and ask the user.
+
+Violating these rules breaks project tracking integrity.
+
 
 
 ## 🚫 Tailwind Policy (Strict)
@@ -42,6 +69,43 @@ All agents MUST:
 - Treat it as authoritative documentation
 - Prefer existing patterns over assumptions
 - Stop and ask if context is missing
+
+## Product Vision & Roadmap (Authoritative)
+
+### V1 – MVP (Current Focus)
+Goal: Deliver an end-to-end working flow for manual social media content creation.
+
+Scope:
+- Prompt → image generation (success/failure handled)
+- Caption generation via Gemini
+- Store generated caption on Post
+- Display caption in UI
+- Manual sharing UX:
+  - Copy caption
+  - Open Instagram (web)
+  - Download generated image
+- CI (lint + tests) must pass
+
+Non-goals (explicitly out of scope for V1):
+- Automatic posting to Instagram
+- Scheduling
+- User plans / billing
+- Token systems
+- Multi-provider optimization
+
+### V2 – Productization
+- Scheduling posts
+- Multiple captions per post
+- Provider fallback & retries
+- Better UX polish
+- Basic analytics
+
+### V3 – Monetization & Scale
+- Token-based usage
+- Paid plans
+- Team / multi-account support
+- Advanced analytics
+
 
 
 ## 🧠 Task Management — Beads (MANDATORY)

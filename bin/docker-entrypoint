@@ -1,14 +1,25 @@
-#!/bin/bash -e
+#!/bin/bash
+set -e
 
-# Enable jemalloc for reduced memory usage and latency.
-if [ -z "${LD_PRELOAD+x}" ]; then
-    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
-    export LD_PRELOAD
+# Wait for Postgres if DATABASE_URL exists
+if [ -n "$DATABASE_URL" ]; then
+  echo "Waiting for database..."
+  bundle exec ruby -e "
+    require 'uri'
+    require 'pg'
+    uri = URI(ENV['DATABASE_URL'])
+    begin
+      PG.connect(host: uri.host, port: uri.port, user: uri.user, password: uri.password, dbname: uri.path[1..])
+      puts 'DB is up!'
+    rescue => e
+      puts e.message
+      sleep 1
+      retry
+    end
+  "
 fi
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
-fi
+# Prepare DB (create + migrate)
+bundle exec rails db:prepare
 
-exec "${@}"
+exec "$@"

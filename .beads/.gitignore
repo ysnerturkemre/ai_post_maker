@@ -32,6 +32,25 @@ beads.left.meta.json
 beads.right.jsonl
 beads.right.meta.json
 
+# -----------------------------
+# Local Beads exports & caches
+# -----------------------------
+beads.left.json
+beads.right.json
+beads.base.json
+
+.beads/
+beads/
+beads-cache/
+beads-index/
+beads-tmp/
+
+# -----------------------------
+# Local issue snapshots / views
+# -----------------------------
+issues.json
+issues.open.json
+
 # NOTE: Do NOT add negation patterns (e.g., !issues.jsonl) here.
 # They would override fork protection in .git/info/exclude, allowing
 # contributors to accidentally commit upstream issue databases.
