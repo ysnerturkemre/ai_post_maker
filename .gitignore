@@ -62,3 +62,6 @@ yarn-debug.log*
 /beads.input.jsonl
 /beads.updated.jsonl
 /beads.updated.only.jsonl
+
+# === Local agent files ===
+/AGENTS.md
