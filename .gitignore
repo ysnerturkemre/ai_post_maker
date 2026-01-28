@@ -55,3 +55,10 @@ yarn-debug.log*
 
 # === Beads runtime ===
 .beads/bd.sock.startlock
+
+# === Beads JSON exports ===
+/.beads/*.jsonl
+/.beads/*.json
+/beads.input.jsonl
+/beads.updated.jsonl
+/beads.updated.only.jsonl
