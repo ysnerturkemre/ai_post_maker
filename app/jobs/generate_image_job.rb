@@ -38,7 +38,7 @@ class GenerateImageJob < ApplicationJob
   def locate_post(prompt, post_id)
     return prompt.posts.find(post_id) if post_id.present?
 
-    prompt.posts.order(:created_at).first || prompt.posts.create!(status: "draft", kind: prompt.kind)
+    prompt.posts.order(:created_at).first || prompt.posts.create!(status: "draft", kind: prompt.kind, user: prompt.user)
   end
 
   def next_order_index(post)

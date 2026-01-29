@@ -3,8 +3,9 @@ require "stringio"
 
 class GenerateImageJobTest < ActiveJob::TestCase
   test "creates asset and updates post status" do
-    prompt = Prompt.create!(text: "Image prompt", kind: "image")
-    post = prompt.posts.create!(status: "draft", kind: "image")
+    user = users(:one)
+    prompt = Prompt.create!(text: "Image prompt", kind: "image", user: user)
+    post = prompt.posts.create!(status: "draft", kind: "image", user: user)
 
     service = Object.new
     service.define_singleton_method(:call) do |prompt_text:, client_id: "ai_post_maker", canceled: nil, &block|
@@ -33,7 +34,7 @@ class GenerateImageJobTest < ActiveJob::TestCase
   end
 
   test "skips non-image prompts" do
-    prompt = Prompt.create!(text: "Video prompt", kind: "image")
+    prompt = Prompt.create!(text: "Video prompt", kind: "image", user: users(:one))
     prompt.update_column(:kind, "video")
 
     assert_no_difference -> { Post.count } do
@@ -42,8 +43,9 @@ class GenerateImageJobTest < ActiveJob::TestCase
   end
 
   test "marks post failed on service error" do
-    prompt = Prompt.create!(text: "Failing prompt", kind: "image")
-    post = prompt.posts.create!(status: "draft", kind: "image")
+    user = users(:one)
+    prompt = Prompt.create!(text: "Failing prompt", kind: "image", user: user)
+    post = prompt.posts.create!(status: "draft", kind: "image", user: user)
     service = Object.new
     def service.call(prompt_text:, client_id: "ai_post_maker", canceled: nil, &block)
       raise ComfyuiImageService::Error, "boom"
@@ -59,8 +61,9 @@ class GenerateImageJobTest < ActiveJob::TestCase
   end
 
   test "marks post canceled when generation is canceled" do
-    prompt = Prompt.create!(text: "Canceled prompt", kind: "image")
-    post = prompt.posts.create!(status: "draft", kind: "image")
+    user = users(:one)
+    prompt = Prompt.create!(text: "Canceled prompt", kind: "image", user: user)
+    post = prompt.posts.create!(status: "draft", kind: "image", user: user)
     service = Object.new
     service.define_singleton_method(:call) do |prompt_text:, client_id: "ai_post_maker", canceled: nil, &block|
       block&.call("prompt_456")

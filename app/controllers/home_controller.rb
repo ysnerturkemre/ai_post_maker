@@ -3,14 +3,14 @@ class HomeController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    render_index(prompt: Prompt.new)
+    render_index(prompt: current_user.prompts.build)
   end
 
   def create
-    @prompt = Prompt.new(prompt_params)
+    @prompt = current_user.prompts.build(prompt_params)
 
     if @prompt.save
-      post = @prompt.posts.create!(status: "queued", kind: @prompt.kind)
+      post = @prompt.posts.create!(status: "queued", kind: @prompt.kind, user: current_user)
 
       GenerateImageJob.perform_later(@prompt.id, post.id) if @prompt.image?
 
@@ -18,7 +18,7 @@ class HomeController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace("prompt_form", Panels::CreatePanelComponent.new(prompt: Prompt.new)),
+            turbo_stream.replace("prompt_form", Panels::CreatePanelComponent.new(prompt: current_user.prompts.build)),
             turbo_stream.replace("dashboard_jobs", dashboard_jobs_frame(fetch_dashboard_jobs))
           ]
         end
@@ -36,7 +36,7 @@ class HomeController < ApplicationController
       end
     end
   rescue => e
-    @prompt ||= Prompt.new
+    @prompt ||= current_user.prompts.build
     @prompt.errors.add(:base, I18n.t("flash.home.error", message: e.message))
 
     respond_to do |format|
@@ -68,7 +68,7 @@ class HomeController < ApplicationController
   end
 
   def render_index(prompt:, status: :ok)
-    recent_posts = Post.includes(:assets, :prompt).order(created_at: :desc).limit(6)
+    recent_posts = current_user.posts.includes(:assets, :prompt).order(created_at: :desc).limit(6)
     recent_jobs = fetch_dashboard_jobs
 
     render Views::Home::Index.new(
@@ -82,7 +82,7 @@ class HomeController < ApplicationController
   def fetch_dashboard_jobs
     recent_statuses = %w[queued processing generated published failed canceled]
 
-    recent_posts = Post.includes(:assets, :prompt)
+    recent_posts = current_user.posts.includes(:assets, :prompt)
       .where(status: recent_statuses)
       .order(created_at: :desc)
       .limit(12)

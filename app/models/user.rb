@@ -4,4 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          # :recoverable, # Şifre sıfırlama e-posta akışı sonraki sürümde açılacak.
          :rememberable, :validatable
+
+  has_many :prompts, dependent: :destroy
+  has_many :posts, dependent: :destroy
 end

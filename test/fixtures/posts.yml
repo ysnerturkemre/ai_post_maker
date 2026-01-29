@@ -8,6 +8,7 @@ one:
   data: {}
   published_at:
   scheduled_at:
+  user: one
 
 two:
   prompt: two
@@ -17,3 +18,4 @@ two:
   data: {}
   published_at:
   scheduled_at:
+  user: two

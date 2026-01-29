@@ -7,7 +7,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroys post and keeps prompt when other posts exist" do
     prompt = prompts(:one)
-    extra_post = Post.create!(prompt: prompt, status: "queued", kind: "image")
+    extra_post = Post.create!(prompt: prompt, status: "queued", kind: "image", user: users(:one))
     post = posts(:one)
 
     assert_difference -> { Post.count }, -1 do
@@ -20,8 +20,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroys prompt when last post is removed" do
-    prompt = Prompt.create!(text: "Cleanup prompt", kind: "image")
-    post = Post.create!(prompt: prompt, status: "queued", kind: "image")
+    prompt = Prompt.create!(text: "Cleanup prompt", kind: "image", user: users(:one))
+    post = Post.create!(prompt: prompt, status: "queued", kind: "image", user: users(:one))
 
     assert_difference -> { Post.count }, -1 do
       assert_difference -> { Prompt.count }, -1 do
@@ -45,5 +45,16 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     post cancel_post_path(post)
 
     assert_equal "generated", post.reload.status
+  end
+
+  test "prevents access to posts owned by other users" do
+    sign_in users(:two)
+    post = posts(:one)
+
+    delete post_path(post)
+    assert_response :not_found
+
+    post cancel_post_path(post)
+    assert_response :not_found
   end
 end

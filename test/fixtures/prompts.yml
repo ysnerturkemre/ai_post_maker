@@ -5,9 +5,11 @@ one:
   lang: "tr"
   tone: "friendly"
   kind: "image"
+  user: one
 
 two:
   text: "Another prompt"
   lang: "en"
   tone: "formal"
   kind: "video"
+  user: two

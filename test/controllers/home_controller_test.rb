@@ -36,6 +36,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_enqueued_with(job: GenerateCaptionJob)
     assert_redirected_to root_path(locale: I18n.locale)
     prompt = Prompt.order(:created_at).last
+    assert_equal users(:one), prompt.user
     assert_equal "en", prompt.lang
     assert_equal "formal", prompt.tone
   end
@@ -70,14 +71,26 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_match "dashboard_jobs", @response.body
   end
 
+  test "scopes dashboard to current user" do
+    sign_in users(:one)
+
+    other_prompt = Prompt.create!(text: "Other user prompt", kind: "image", user: users(:two))
+    other_prompt.posts.create!(status: "queued", kind: "image", user: users(:two))
+
+    get home_path(locale: "en")
+    assert_response :success
+    refute_includes @response.body, "Other user prompt"
+  end
+
   test "shows caption error when caption generation fails" do
     sign_in users(:one)
 
-    prompt = Prompt.create!(text: "Caption error prompt", kind: "image")
+    prompt = Prompt.create!(text: "Caption error prompt", kind: "image", user: users(:one))
     prompt.posts.create!(
       status: "failed",
       kind: "image",
-      data: { "caption_error" => "boom" }
+      data: { "caption_error" => "boom" },
+      user: users(:one)
     )
 
     get home_path(locale: "en")

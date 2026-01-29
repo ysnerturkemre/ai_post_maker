@@ -35,7 +35,7 @@ class GenerateCaptionJob < ApplicationJob
   private
 
   def locate_post(prompt)
-    prompt.posts.order(created_at: :desc).first || prompt.posts.create!(status: "draft", kind: prompt.kind)
+    prompt.posts.order(created_at: :desc).first || prompt.posts.create!(status: "draft", kind: prompt.kind, user: prompt.user)
   end
 
   def merge_data(post, extra)

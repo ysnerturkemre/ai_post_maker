@@ -8,8 +8,9 @@ class GenerateCaptionJobTest < ActiveJob::TestCase
   end
 
   test "runs with valid prompt" do
-    prompt = Prompt.create!(text: "Caption prompt", kind: "image")
-    post = prompt.posts.create!(status: "queued", kind: "image")
+    user = users(:one)
+    prompt = Prompt.create!(text: "Caption prompt", kind: "image", user: user)
+    post = prompt.posts.create!(status: "queued", kind: "image", user: user)
     service = Object.new
     service.define_singleton_method(:call) do
       { variants: ["Caption A", "Caption B"], selected: "Caption A" }
@@ -28,8 +29,9 @@ class GenerateCaptionJobTest < ActiveJob::TestCase
   end
 
   test "stores caption_error when local service fails" do
-    prompt = Prompt.create!(text: "Caption prompt", kind: "image")
-    post = prompt.posts.create!(status: "queued", kind: "image")
+    user = users(:one)
+    prompt = Prompt.create!(text: "Caption prompt", kind: "image", user: user)
+    post = prompt.posts.create!(status: "queued", kind: "image", user: user)
     message = "Caption failed"
     service = Object.new
     service.define_singleton_method(:call) do
