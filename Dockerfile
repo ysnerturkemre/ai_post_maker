@@ -1,11 +1,9 @@
 # syntax=docker/dockerfile:1
 
-# Ruby sürümü (.ruby-version ile uyumlu olmalı)
 ARG RUBY_VERSION=3.4.8
 FROM ruby:${RUBY_VERSION}
 
 # Gerekli sistem paketleri
-# Dokümandan aldık: libvips + libjemalloc2 (opsiyonel ama faydalı)
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   build-essential \
   libpq-dev \
@@ -14,7 +12,6 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   libjemalloc2 \
   && rm -rf /var/lib/apt/lists/*
 
-# Uygulama dizini
 WORKDIR /rails
 
 # Gem'leri yükle
@@ -24,11 +21,10 @@ RUN bundle install
 # Uygulama kodunu kopyala
 COPY . .
 
-# Entrypoint
+# Entrypoint (Rails'in standart docker-entrypoint'i varsa kalsın)
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Rails portu
 EXPOSE 3000
 
-# Varsayılan komut
-CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+# ÖNEMLİ: Server başlamadan önce stale PID temizle
+CMD ["bash", "-lc", "rm -f /rails/tmp/pids/server.pid && exec bin/rails server -b 0.0.0.0 -p 3000"]
