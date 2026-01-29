@@ -26,3 +26,7 @@ bundle exec sidekiq
 ```
 
 ActiveStorage is configured for local disk in V1 (`storage/`).
+
+## Caption Settings
+- Prompt form exposes caption language and tone controls.
+- Defaults: language `tr`, tone `friendly`.

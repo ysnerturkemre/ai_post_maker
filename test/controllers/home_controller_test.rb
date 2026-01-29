@@ -28,13 +28,16 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_difference -> { Prompt.count }, 1 do
       assert_difference -> { Post.count }, 1 do
         assert_enqueued_jobs 2 do
-          post home_path, params: { prompt: { text: "Test prompt", kind: "image" } }
+          post home_path, params: { prompt: { text: "Test prompt", kind: "image", lang: "en", tone: "formal" } }
         end
       end
     end
     assert_enqueued_with(job: GenerateImageJob)
     assert_enqueued_with(job: GenerateCaptionJob)
     assert_redirected_to root_path(locale: I18n.locale)
+    prompt = Prompt.order(:created_at).last
+    assert_equal "en", prompt.lang
+    assert_equal "formal", prompt.tone
   end
 
   test "rejects video prompt requests" do

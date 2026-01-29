@@ -43,6 +43,23 @@ class Panels::CreatePanelComponent < ApplicationComponent
         end
       end
 
+      div class: "row g-3" do
+        div class: "col-12 col-md-6" do
+          f.select :lang,
+            lang_options,
+            { selected: @prompt.lang.presence || LocalCaptionService::DEFAULT_LANG },
+            label: I18n.t("panels.create.lang_label"),
+            label_class: "form-label fw-semibold text-white"
+        end
+        div class: "col-12 col-md-6" do
+          f.select :tone,
+            tone_options,
+            { selected: @prompt.tone.presence || LocalCaptionService::DEFAULT_TONE },
+            label: I18n.t("panels.create.tone_label"),
+            label_class: "form-label fw-semibold text-white"
+        end
+      end
+
       f.submit I18n.t("panels.create.submit"), class: "btn btn-primary w-100 fw-semibold mt-2"
     end
   end
@@ -57,5 +74,19 @@ class Panels::CreatePanelComponent < ApplicationComponent
         @prompt.errors.full_messages.each { |msg| li { msg } }
       end
     end
+  end
+
+  def lang_options
+    [
+      [I18n.t("panels.create.lang_options.tr"), "tr"],
+      [I18n.t("panels.create.lang_options.en"), "en"]
+    ]
+  end
+
+  def tone_options
+    [
+      [I18n.t("panels.create.tone_options.friendly"), "friendly"],
+      [I18n.t("panels.create.tone_options.formal"), "formal"]
+    ]
   end
 end

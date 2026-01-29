@@ -21,6 +21,14 @@ tr:
       badge: "manual"
       prompt_label: "Prompt"
       prompt_placeholder: "Örn: Yapay zekâ ile ilgili 3 ipuçlu, samimi bir Instagram postu yaz..."
+      lang_label: "Açıklama dili"
+      tone_label: "Açıklama tonu"
+      lang_options:
+        tr: "Türkçe"
+        en: "İngilizce"
+      tone_options:
+        friendly: "Samimi"
+        formal: "Resmi"
       output_label: "Çıktı türü"
       image_label: "Görsel"
       video_label: "Video"

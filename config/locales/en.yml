@@ -44,6 +44,14 @@ en:
       badge: "manual"
       prompt_label: "Prompt"
       prompt_placeholder: "E.g. Write a friendly Instagram post about AI with 3 tips..."
+      lang_label: "Caption language"
+      tone_label: "Caption tone"
+      lang_options:
+        tr: "Turkish"
+        en: "English"
+      tone_options:
+        friendly: "Friendly"
+        formal: "Formal"
       output_label: "Output type"
       image_label: "Image"
       video_label: "Video"
