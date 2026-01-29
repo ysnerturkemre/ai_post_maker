@@ -1,8 +1,8 @@
 require "test_helper"
 
-class GeminiCaptionServiceTest < ActiveSupport::TestCase
+class LocalCaptionServiceTest < ActiveSupport::TestCase
   test "returns variants hash" do
-    result = GeminiCaptionService.new(prompt_text: "Hello").call
+    result = LocalCaptionService.new(prompt_text: "Hello").call
 
     assert result[:variants].is_a?(Array)
     assert result[:variants].any?
@@ -10,8 +10,8 @@ class GeminiCaptionServiceTest < ActiveSupport::TestCase
   end
 
   test "raises when prompt is blank" do
-    assert_raises(GeminiCaptionService::Error) do
-      GeminiCaptionService.new(prompt_text: "  ").call
+    assert_raises(LocalCaptionService::Error) do
+      LocalCaptionService.new(prompt_text: "  ").call
     end
   end
 end

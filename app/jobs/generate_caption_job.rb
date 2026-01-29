@@ -8,7 +8,7 @@ class GenerateCaptionJob < ApplicationJob
     post = locate_post(prompt)
     return unless post
 
-    result = GeminiCaptionService.new(
+    result = LocalCaptionService.new(
       prompt_text: prompt.text,
       lang: prompt.lang,
       tone: prompt.tone
@@ -24,9 +24,9 @@ class GenerateCaptionJob < ApplicationJob
     })
 
     post.update!(caption: caption, data: data)
-  rescue GeminiCaptionService::Error => e
+  rescue LocalCaptionService::Error => e
     mark_failed(post, e.message)
-    Rails.logger.error("[GenerateCaptionJob] Gemini: #{e.message}")
+    Rails.logger.error("[GenerateCaptionJob] Caption: #{e.message}")
   rescue => e
     mark_failed(post, e.message)
     Rails.logger.error("[GenerateCaptionJob] #{e.message}")

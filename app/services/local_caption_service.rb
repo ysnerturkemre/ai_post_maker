@@ -1,5 +1,5 @@
-# app/services/gemini_caption_service.rb
-class GeminiCaptionService
+# app/services/local_caption_service.rb
+class LocalCaptionService
   class Error < StandardError; end
 
   DEFAULT_LANG = "tr"

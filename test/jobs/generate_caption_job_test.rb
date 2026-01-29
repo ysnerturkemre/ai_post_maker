@@ -15,7 +15,7 @@ class GenerateCaptionJobTest < ActiveJob::TestCase
       { variants: ["Caption A", "Caption B"], selected: "Caption A" }
     end
 
-    GeminiCaptionService.stub(:new, ->(*, **){ service }) do
+    LocalCaptionService.stub(:new, ->(*, **){ service }) do
       assert_silent do
         GenerateCaptionJob.perform_now(prompt.id)
       end
@@ -25,5 +25,24 @@ class GenerateCaptionJobTest < ActiveJob::TestCase
     assert_equal "Caption A", post.caption
     assert_equal ["Caption A", "Caption B"], post.data["caption_variants"]
     assert_equal 0, post.data["caption_selected_index"]
+  end
+
+  test "stores caption_error when local service fails" do
+    prompt = Prompt.create!(text: "Caption prompt", kind: "image")
+    post = prompt.posts.create!(status: "queued", kind: "image")
+    message = "Caption failed"
+    service = Object.new
+    service.define_singleton_method(:call) do
+      raise LocalCaptionService::Error, message
+    end
+
+    LocalCaptionService.stub(:new, ->(*, **){ service }) do
+      assert_silent do
+        GenerateCaptionJob.perform_now(prompt.id)
+      end
+    end
+
+    post.reload
+    assert_equal message, post.data["caption_error"]
   end
 end
