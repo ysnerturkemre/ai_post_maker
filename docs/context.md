@@ -21,6 +21,12 @@
 - One output per request
 - Local provider only (ComfyUI)
 
+## ComfyUI Integration (V1) (MANDATORY)
+- Generated assets MUST be retrieved via ComfyUI HTTP API.
+- Use GET /history/{prompt_id} to discover output filenames.
+- Download assets via GET /view?filename=...&subfolder=...&type=output.
+- DO NOT read files directly from ~/ai/comfyui/output or any shared filesystem path.
+
 ## Non-Goals (V1)
 - No scheduling
 - No automation

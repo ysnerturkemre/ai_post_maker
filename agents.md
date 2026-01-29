@@ -1,238 +1,170 @@
-# Codex Agent: Rails 8 + Phlex + Bootstrap5 + Turbo/Hotwire (RepoMix Uyumlu)
+# Codex Agent: Rails 8 + Phlex + Bootstrap 5 + Turbo/Hotwire (RepoMix Uyumlu)
 
-You are a coding agent working inside a Ruby on Rails application (Rails ~> 8.0.2, Ruby 3.4.x).
-The repository uses Phlex and Phlex-Rails for UI, Turbo/Hotwire for interactivity, and Devise for auth.
-Your job is to implement requested features/fixes while STRICTLY following the project conventions below.
+You are a **SENIOR coding agent** working inside a Ruby on Rails application  
+(Rails ~> 8.0.2, Ruby 3.4.x).
 
-## Hard Requirements (Non-negotiable)
-1) Framework: Ruby on Rails (Rails 8.x).
-2) Views/UI: Use **Phlex** (phlex + phlex-rails). Do NOT add ERB views for new pages unless explicitly requested.
-3) CSS Framework: Use **Bootstrap 5** classes and patterns.
-4) Forms: Use **bootstrap_form** gem builders for forms (BootstrapForm).
-5) Interactivity: Use **Turbo Frames / Turbo Streams + Hotwire (Turbo + Stimulus)**. Prefer progressive enhancement.
+You are expected to behave as a **senior software engineer at all times**.
 
-If any existing code contradicts these rules, keep backward compatibility but implement new work according to these rules.
+The repository uses:
+- **Phlex + Phlex-Rails** for UI
+- **Turbo/Hotwire** for interactivity
+- **Devise** for authentication
+
+Your job is to implement requested features and fixes while **STRICTLY**
+following the project conventions below.
 
 ---
 
-## 🚫 Ticket & Status Rules (Hard)
-- The agent MUST NOT change ticket status to "Done", "Completed", or equivalent without EXPLICIT user approval.
-- The agent MUST ask for approval before closing or marking any ticket as done.
-- If unsure, the agent must leave the ticket in "In Progress".
-- Silence is NOT approval.
+## 🔒 Hard Requirements (Non-Negotiable)
 
-## Beads Ticket Completion Policy (MANDATORY)
+1. **Framework**: Ruby on Rails (Rails 8.x)
+2. **Views / UI**:
+   - Use **Phlex** (`phlex`, `phlex-rails`)
+   - ❌ Do NOT add ERB views unless explicitly requested
+3. **CSS Framework**: **Bootstrap 5**
+4. **Forms**: Use **bootstrap_form** gem builders
+5. **Interactivity**:
+   - Turbo Frames / Turbo Streams
+   - Hotwire (Turbo + Stimulus)
+   - Prefer progressive enhancement
 
-This project uses Beads for planning and execution tracking.
-Ticket completion rules are STRICT and must be followed.
+If existing code contradicts these rules, maintain backward compatibility,
+but **all new work must follow these rules**.
+
+---
+
+## 🧠 Senior Engineer Enforcement (MANDATORY)
+
+You MUST operate as a **senior engineer**, not a junior executor.
+
+This means:
+- Explicit planning before coding
+- Conscious architectural decisions
+- Defensive coding
+- Verification before claiming completion
+- No guessing, no inventing, no assumptions
+- Stop immediately if context is missing
+
+Failure to follow these rules is considered a **senior discipline violation**.
+
+---
+
+## 🚫 Ticket & Status Rules (Strict)
+
+- Tickets MUST NOT be marked **Done / Completed** without **explicit user approval**
+- You MUST ask before closing any ticket
+- Silence is **NOT** approval
+- If unsure, leave the ticket **In Progress**
+
+---
+
+## 🧾 Beads Ticket Completion Policy (MANDATORY)
+
+This project uses **Beads** for planning and execution tracking.
+These rules are **STRICT**.
 
 ### Dependency Semantics
-- "Depends on" = PARENT tickets
-- "Blocking" = CHILD tickets
+- **Depends on** → Parent tickets
+- **Blocking** → Child tickets
 
 ### Completion Rules
-1) ONLY close the ticket that was explicitly implemented.
-2) NEVER auto-close dependency tickets listed under "Depends on".
-3) NEVER close parent tickets or epics unless explicitly instructed by the user.
-4) Completing a child ticket does NOT imply its parent is complete.
-5) Epics are closed manually by the user only, after all child tickets are done.
+1. Close **only** the ticket that was explicitly implemented
+2. NEVER auto-close tickets listed under **Depends on**
+3. NEVER close parent tickets or epics unless explicitly instructed
+4. Completing a child ticket does **not** complete its parent
+5. Epics are closed **manually by the user only**
 
-### Practical Rule of Thumb
-- If a ticket has "Depends on" entries → it is a CHILD → you may close ONLY this ticket.
-- If a ticket has "Blocking" entries → it is a PARENT → DO NOT close it.
-
-### Enforcement
-- Do not ask to close dependencies.
-- Do not suggest bulk or cascading closures.
-- When in doubt, leave tickets OPEN and ask the user.
-
-Violating these rules breaks project tracking integrity.
+When in doubt → **leave tickets open and ask**
 
 ---
 
 ## 🚫 Tailwind Policy (Strict)
-- Do NOT introduce Tailwind-based UI for new work (even if Tailwind exists in Gemfile/stylesheets).
-- Do NOT output Tailwind utility classes (e.g., flex, gap-4, text-gray-500, bg-blue-600).
-- Do NOT mix Tailwind with Bootstrap.
-- If Tailwind code exists in the files you touch, you MUST convert it to **Bootstrap 5** equivalents.
 
-### ✅ Mandatory Conversion Rule (If Tailwind Exists)
-When editing any file that contains Tailwind:
-- Replace Tailwind classes with **Bootstrap 5** classes.
-- Replace Tailwind-based forms with **bootstrap_form** (BootstrapForm) helpers.
-- Keep the same UI intent/behavior (layout, spacing, responsiveness) using Bootstrap 5 grid/utilities.
-- Do NOT leave “both” (Tailwind + Bootstrap).
-- If full conversion is too large, convert at least the changed/adjacent sections and clearly note remaining Tailwind areas.
+- ❌ Do NOT introduce Tailwind for new work
+- ❌ Do NOT output Tailwind utility classes
+- ❌ Do NOT mix Tailwind and Bootstrap
+
+If a touched file contains Tailwind:
+- Convert to **Bootstrap 5**
+- Convert forms to **bootstrap_form**
+- Preserve intent and behavior
+- Do NOT leave mixed systems
 
 ---
 
-## Context Enforcement
-All agents MUST:
-- Read docs/context.md before coding
-- Treat it as authoritative documentation
-- Prefer existing patterns over assumptions
-- Stop and ask if context is missing
+## 📘 Context Enforcement (Senior Rule)
+
+Before doing ANY framework-dependent work:
+1. Read `docs/context.md`
+2. Inspect existing repository code
+3. Use Context7 only if needed
+
+If information is missing:
+- STOP
+- Ask a **specific clarification question**
+- DO NOT guess or invent APIs, files, or behavior
 
 ---
 
-## Product Vision & Roadmap (Authoritative)
+## 🚀 Product Vision & Roadmap (Authoritative)
 
-### V1 – MVP (Current Focus)
-Goal: Deliver an end-to-end working flow for manual social media content creation using a fully local and free AI stack.
+### V1 — MVP (Current Focus)
+
+Goal:  
+Deliver an end-to-end manual social media content creation flow using a
+**local and free AI stack**.
 
 Scope:
-- Prompt → **image generation via ComfyUI (local GPU)** (success/failure handled)
-- Prompt → **video generation via ComfyUI (local GPU)** (short clip; success/failure handled)
-- Store generated assets (image/video) on Post via ActiveStorage
-- Store generation metadata on Post (prompt + workflow JSON + provider info)
-- Caption generation is **template-based** (no external LLM required in V1)
-- Display caption + generated asset(s) in UI
-- Manual sharing UX:
-  - Copy caption
-  - Open Instagram (web)
-  - Download generated image/video
-- CI (lint + tests) must pass
+- Prompt → image generation via **ComfyUI (local GPU)**
+- Prompt → video generation via **ComfyUI**
+- Success / failure handling
+- Store assets on `Post` via ActiveStorage
+- Store metadata:
+  - prompt
+  - workflow JSON
+  - provider info
+- Caption generation is **template-based**
+- Manual sharing UX only
+- CI must pass
 
-Non-goals (explicitly out of scope for V1):
-- Cloud or paid AI providers (Gemini, OpenAI, Replicate, etc.)
-- Automatic posting to Instagram
+Non-goals:
+- External AI providers
+- Auto posting
 - Scheduling
-- User plans / billing
+- Billing
 - Token systems
-- Multi-provider optimization
-
-### V2 – Productization
-- Scheduling posts
-- Multiple captions per post
-- Provider fallback & retries
-- Better UX polish
-- Basic analytics
-- Optional: Gemini caption provider as a paid/optional upgrade
-
-### V3 – Monetization & Scale
-- Token-based usage
-- Paid plans
-- Team / multi-account support
-- Advanced analytics
 
 ---
 
-## Docker Architecture (V1)
+## 🐳 Docker Architecture (V1)
 
-This project intentionally uses **two separate Docker stacks**:
-
-### 1) Application Stack (Rails)
-Location: `~/projeler/ai_post_maker`
-
-Services:
-- Rails (web)
+### Application Stack (Rails)
+- Rails
 - Sidekiq
 - PostgreSQL
 - Redis
 
-Responsibilities:
-- UI and user flow
-- Job orchestration
-- Database persistence
-- ActiveStorage management
-- Polling AI job status and attaching outputs
+🚫 MUST NOT require GPU
 
-This stack MUST NOT require GPU access.
+### AI Stack (ComfyUI)
+- GPU-enabled
+- Image + video generation only
 
-### 2) AI Stack (ComfyUI)
-Location: `~/ai/comfyui`
-
-Services:
-- ComfyUI (GPU-enabled)
-
-Responsibilities:
-- Image generation (SDXL)
-- Video generation (AnimateDiff / SVD)
-- Writing generated files to the shared output directory
-
-GPU access is exclusive to this stack.
-
-### Communication
-- Rails communicates with ComfyUI via HTTP:
-  - Endpoint: `http://localhost:8188`
-  - Flow: submit prompt/workflow → poll job → read output file
-- Generated assets are read from:
-  - `~/ai/comfyui/output`
-
-This architecture is mandatory for V1 unless explicitly changed by the user.
+Communication via HTTP (`http://localhost:8188`).
 
 ---
 
-## 🧠 AI Provider – ComfyUI (V1)
+## ⚠️ ComfyUI Output Handling (Authoritative)
 
-V1 uses **ComfyUI** as the single generation backend for both image and video.
-
-Runtime:
-- Runs locally via Docker (WSL2) with NVIDIA GPU enabled
-- UI endpoint: http://localhost:8188
-
-Integration Contract (Rails → ComfyUI):
-- Rails submits prompt + workflow JSON via HTTP
-- Rails polls job status until completion
-- Rails downloads generated artifacts (image/video)
-- Persist on Post:
-  - prompt
-  - workflow JSON
-  - provider metadata
-  - generated assets via ActiveStorage
-
-Status lifecycle:
-`queued → processing → generated | failed | canceled`
-
-Notes:
-- Models are stored locally and mounted into the ComfyUI container
-- V1 does NOT use any external AI APIs
-- Gemini integration is allowed only in V2 (optional upgrade)
+- Use **ComfyUI HTTP API only**
+- `GET /history/{prompt_id}`
+- `GET /view?...`
+- ❌ No filesystem reads
+- ❌ No shared volume assumptions
 
 ---
 
-## 📚 Context7 — Mandatory Documentation Source (HARD RULE)
+## 📚 Evidence Requirement (MANDATORY)
 
-### Absolute Rules
-- Before implementing or modifying ANY code that depends on framework behavior (Rails, Phlex, Turbo, Bootstrap, Beads),
-  you MUST first check, in this order:
-  1) docs/context.md (this repository)
-  2) Existing code in this repository
-  3) The Context7 MCP tool
+Every non-trivial implementation MUST include:
 
-- You are NOT allowed to rely on general knowledge, memory, or assumptions.
-
-### If information is missing
-- If the required information is NOT found in:
-  - docs/context.md
-  - the current codebase
-  - or Context7
-- Then you MUST:
-  - STOP
-  - Ask the user a concrete clarification question
-- You MUST NOT invent APIs, methods, filenames, configs, commands, or behaviors.
-
-### Evidence Requirement (MANDATORY)
-For every non-trivial implementation or decision, you MUST include a short section in your answer:
-
-## Evidence
-- Source: docs/context.md (file path + section), OR
-- Source: Context7 (doc title or short snippet), OR
-- Source: Existing code (file path)
-
-### Enforcement
-If you cannot access Context7 or cannot find the information there, you must say exactly:
-"I cannot find this in docs/context.md, the current codebase, or Context7. I need clarification."
-
-You MUST NOT proceed with implementation without Evidence.
-
----
-
-## 🧠 Task Management — Beads (MANDATORY)
-
-This repository uses **Beads (`bd`) as the single source of truth** for planning, task tracking, and agent workflow.
-
-### 🔒 Beads Workflow Rules (STRICT)
-1) Before starting ANY work, you MUST run:
-   ```bash
-   bd ready
