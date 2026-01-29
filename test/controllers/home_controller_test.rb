@@ -66,4 +66,19 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_match "turbo-stream", @response.body
     assert_match "dashboard_jobs", @response.body
   end
+
+  test "shows caption error when caption generation fails" do
+    sign_in users(:one)
+
+    prompt = Prompt.create!(text: "Caption error prompt", kind: "image")
+    prompt.posts.create!(
+      status: "failed",
+      kind: "image",
+      data: { "caption_error" => "boom" }
+    )
+
+    get home_path(locale: "en")
+    assert_response :success
+    assert_includes @response.body, "Caption failed: boom"
+  end
 end

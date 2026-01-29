@@ -59,9 +59,16 @@ module Dashboard
     end
 
     def caption_snippet
-      return if @job.caption.blank?
+      if @job.caption.present?
+        p(class: "mb-0 small text-white-50") { truncate(@job.caption.to_s, length: 80) }
+        return
+      end
 
-      p(class: "mb-0 small text-white-50") { truncate(@job.caption.to_s, length: 80) }
+      return if @job.caption_error.blank?
+
+      p(class: "mb-0 small text-danger-emphasis") do
+        I18n.t("panels.recent.caption_error", message: @job.caption_error)
+      end
     end
 
     def created_at_text

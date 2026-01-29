@@ -4,13 +4,13 @@ class DashboardJob
   include ActiveModel::Conversion
   extend ActiveModel::Naming
 
-  attr_reader :id, :status, :prompt, :output_type, :created_at, :asset_url, :caption, :error_message
+  attr_reader :id, :status, :prompt, :output_type, :created_at, :asset_url, :caption, :error_message, :caption_error
 
   def self.model_name
     Post.model_name
   end
 
-  def initialize(id:, status:, prompt:, output_type:, created_at:, asset_url:, caption:, error_message:)
+  def initialize(id:, status:, prompt:, output_type:, created_at:, asset_url:, caption:, error_message:, caption_error:)
     @id = id
     @status = status
     @prompt = prompt
@@ -19,6 +19,7 @@ class DashboardJob
     @asset_url = asset_url
     @caption = caption
     @error_message = error_message
+    @caption_error = caption_error
   end
 
   def to_key

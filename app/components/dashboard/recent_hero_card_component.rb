@@ -47,10 +47,19 @@ module Dashboard
     end
 
     def caption_block
-      return if @job.caption.blank?
+      if @job.caption.present?
+        div class: "p-3 bg-white bg-opacity-10 rounded" do
+          p(class: "mb-0 text-white small") { truncate(@job.caption.to_s, length: 240) }
+        end
+        return
+      end
 
-      div class: "p-3 bg-white bg-opacity-10 rounded" do
-        p(class: "mb-0 text-white small") { truncate(@job.caption.to_s, length: 240) }
+      return if @job.caption_error.blank?
+
+      div class: "p-3 bg-danger bg-opacity-10 rounded" do
+        p(class: "mb-0 text-danger-emphasis small") do
+          I18n.t("panels.recent.caption_error", message: @job.caption_error)
+        end
       end
     end
 

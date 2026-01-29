@@ -61,6 +61,7 @@ en:
       sample: "Sample content %{index}"
       pending_with_status: "Generating (%{status})"
       error_label: "Error"
+      caption_error: "Caption failed: %{message}"
       default_error: "A problem occurred during generation."
       delete_button: "Delete request"
       delete_confirm: "Are you sure you want to delete this request?"

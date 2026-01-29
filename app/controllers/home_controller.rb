@@ -106,7 +106,8 @@ class HomeController < ApplicationController
       created_at: post.created_at,
       asset_url: asset_url_for(asset),
       caption: post.caption,
-      error_message: post.data.is_a?(Hash) ? post.data["image_error"] : nil
+      error_message: post.data.is_a?(Hash) ? post.data["image_error"] : nil,
+      caption_error: post.data.is_a?(Hash) ? post.data["caption_error"] : nil
     )
   end
 

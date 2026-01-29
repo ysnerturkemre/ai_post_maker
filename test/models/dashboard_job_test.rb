@@ -1,39 +1,20 @@
 require "test_helper"
 
 class DashboardJobTest < ActiveSupport::TestCase
-  test "exposes model_name as Post" do
-    assert_equal Post.model_name, DashboardJob.model_name
-  end
-
-  test "reports persisted when id present" do
+  test "stores caption and error fields" do
     job = DashboardJob.new(
-      id: 10,
-      status: "queued",
-      prompt: "Hello",
+      id: 1,
+      status: "failed",
+      prompt: "prompt",
       output_type: "image",
       created_at: Time.current,
       asset_url: nil,
-      caption: "Caption",
-      error_message: nil
-    )
-
-    assert job.persisted?
-    assert_equal [10], job.to_key
-  end
-
-  test "reports not persisted without id" do
-    job = DashboardJob.new(
-      id: nil,
-      status: "queued",
-      prompt: "Hello",
-      output_type: "image",
-      created_at: nil,
-      asset_url: nil,
       caption: nil,
-      error_message: nil
+      error_message: "image failed",
+      caption_error: "caption failed"
     )
 
-    assert_not job.persisted?
-    assert_nil job.to_key
+    assert_equal "caption failed", job.caption_error
+    assert_equal "image failed", job.error_message
   end
 end

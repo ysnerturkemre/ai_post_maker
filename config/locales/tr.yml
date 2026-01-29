@@ -38,6 +38,7 @@ tr:
       sample: "Örnek içerik %{index}"
       pending_with_status: "Üretim sürüyor (%{status})"
       error_label: "Hata"
+      caption_error: "Açıklama üretilemedi: %{message}"
       default_error: "Üretim sırasında bir hata oluştu."
       delete_button: "İsteği sil"
       delete_confirm: "Bu isteği silmek istediğine emin misin?"
