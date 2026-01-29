@@ -58,4 +58,12 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :unprocessable_entity
   end
+
+  test "renders dashboard jobs turbo stream" do
+    sign_in users(:one)
+    get home_dashboard_jobs_path, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    assert_response :success
+    assert_match "turbo-stream", @response.body
+    assert_match "dashboard_jobs", @response.body
+  end
 end

@@ -27,7 +27,12 @@ class Views::Home::Index < ApplicationComponent
             panel_surface { render ::Panels::CreatePanelComponent.new(prompt: @prompt) }
           end
         end
-        div class: "col-12 col-lg-6" do
+        div class: "col-12 col-lg-6",
+          data: {
+            controller: "poller",
+            poller_url_value: home_dashboard_jobs_path(format: :turbo_stream),
+            poller_interval_value: 5
+          } do
           turbo_frame_tag "dashboard_jobs" do
             render ::Dashboard::RightPanelComponent.new(recent_jobs: @recent_jobs)
           end

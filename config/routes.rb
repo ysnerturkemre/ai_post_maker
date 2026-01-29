@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   # Home
   get "/home", to: "home#index", as: :home
+  get "/home/dashboard_jobs", to: "home#dashboard_jobs", as: :home_dashboard_jobs
   post "/home", to: "home#create"
   resources :posts, only: [:destroy] do
     post :cancel, on: :member

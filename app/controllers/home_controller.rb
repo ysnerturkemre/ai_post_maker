@@ -19,7 +19,7 @@ class HomeController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.replace("prompt_form", Panels::CreatePanelComponent.new(prompt: Prompt.new)),
-            turbo_stream.replace("dashboard_jobs", Dashboard::RightPanelComponent.new(recent_jobs: dashboard_jobs))
+            turbo_stream.replace("dashboard_jobs", dashboard_jobs_frame(fetch_dashboard_jobs))
           ]
         end
         format.html { redirect_to root_path, notice: I18n.t("flash.home.enqueued") }
@@ -50,6 +50,17 @@ class HomeController < ApplicationController
     end
   end
 
+  def dashboard_jobs
+    recent_jobs = fetch_dashboard_jobs
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace("dashboard_jobs", dashboard_jobs_frame(recent_jobs))
+      end
+      format.html { redirect_to home_path }
+    end
+  end
+
   private
 
   def prompt_params
@@ -58,7 +69,7 @@ class HomeController < ApplicationController
 
   def render_index(prompt:, status: :ok)
     recent_posts = Post.includes(:assets, :prompt).order(created_at: :desc).limit(6)
-    recent_jobs = dashboard_jobs
+    recent_jobs = fetch_dashboard_jobs
 
     render Views::Home::Index.new(
       recent_posts: recent_posts,
@@ -68,7 +79,7 @@ class HomeController < ApplicationController
   end
 
   # Recent jobs = kuyruktaki ve tamamlanan/başarısız olan Post'lar
-  def dashboard_jobs
+  def fetch_dashboard_jobs
     recent_statuses = %w[queued processing generated published failed canceled]
 
     recent_posts = Post.includes(:assets, :prompt)
@@ -77,6 +88,12 @@ class HomeController < ApplicationController
       .limit(12)
 
     recent_posts.map { |p| build_job_view(p) }
+  end
+
+  def dashboard_jobs_frame(recent_jobs)
+    view_context.turbo_frame_tag("dashboard_jobs") do
+      view_context.render(Dashboard::RightPanelComponent.new(recent_jobs: recent_jobs))
+    end
   end
 
   def build_job_view(post)
