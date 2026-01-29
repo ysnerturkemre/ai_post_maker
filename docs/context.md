@@ -19,7 +19,7 @@
 - Prompt → Background Job
 - Status: queued → processing → generated / failed / canceled
 - One output per request
-- Free providers only (AI Horde / local)
+- Local provider only (ComfyUI)
 
 ## Non-Goals (V1)
 - No scheduling
@@ -33,4 +33,3 @@
 - Do NOT use `form_with` or `form_for` directly.
 - Do NOT build manual `<input>` elements for app forms.
 - Follow Bootstrap 5 form patterns (labels, help text, validation).
-

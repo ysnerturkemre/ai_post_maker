@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_06_212222) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_29_233500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_06_212222) do
     t.datetime "scheduled_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "comfyui_prompt_id"
     t.index ["prompt_id"], name: "index_posts_on_prompt_id"
   end
 

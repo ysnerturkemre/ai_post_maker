@@ -1,6 +1,5 @@
 # app/jobs/generate_image_job.rb
-require "base64"
-require "open-uri"
+# app/jobs/generate_image_job.rb
 require "stringio"
 class GenerateImageJob < ApplicationJob
   queue_as :default
@@ -10,38 +9,28 @@ class GenerateImageJob < ApplicationJob
 
     post = locate_post(prompt, post_id)
     return if post.canceled?
+    return if image_already_attached?(post)
     post.update!(status: "queued") if post.draft?
 
-    generation = AiHordeImageService.new(prompt_text: prompt.text, aspect: :square).call(
+    result = ComfyuiImageService.new.call(
+      prompt_text: prompt.text,
       canceled: -> { post.reload.canceled? }
-    ) do |job_id|
-      mark_processing(post, job_id)
+    ) do |prompt_id|
+      mark_processing(post, prompt_id)
     end
 
     return if post.reload.canceled?
-    raise AiHordeImageService::Error, "Görsel URL alınamadı." if generation[:url].blank?
 
-    post.assets.create!(
-      kind: "image",
-      file_url: generation[:url],
-      width: generation[:width],
-      height: generation[:height],
-      order_index: next_order_index(post)
-    ).tap do |asset|
-      attach_asset_file(asset, generation[:url])
-    end
-
+    attach_image(post, result.fetch(:image))
     post.update!(status: "generated")
-  rescue AiHordeImageService::Canceled => e
+  rescue ComfyuiImageService::Canceled => e
     mark_canceled(post, e.message)
-  rescue AiHordeImageService::Error => e
+  rescue ComfyuiImageService::Error => e
     mark_failed(post, e.message)
-    Rails.logger.error("[GenerateImageJob] AI Horde: #{e.message}")
-    raise
+    Rails.logger.error("[GenerateImageJob] ComfyUI: #{e.message}")
   rescue => e
     mark_failed(post, e.message)
     Rails.logger.error("[GenerateImageJob] #{e.message}")
-    raise
   end
 
   private
@@ -56,59 +45,41 @@ class GenerateImageJob < ApplicationJob
     post.assets.maximum(:order_index).to_i + 1
   end
 
-  def attach_asset_file(asset, url)
-    return if url.blank? || asset.file.attached?
+  def image_already_attached?(post)
+    post.assets.any? { |asset| asset.file.attached? }
+  end
 
-    if url.to_s.start_with?("data:image")
-      attach_data_url(asset, url)
-    elsif url.to_s.start_with?("http")
-      attach_remote_url(asset, url)
+  def attach_image(post, image)
+    io = image.fetch(:io)
+    io.rewind if io.respond_to?(:rewind)
+
+    post.assets.create!(
+      kind: "image",
+      order_index: next_order_index(post)
+    ).tap do |asset|
+      asset.file.attach(
+        io: io,
+        filename: image[:filename].presence || "comfyui_post_#{post.id}.png",
+        content_type: image[:content_type].presence || "image/png"
+      )
     end
-  rescue => e
-    Rails.logger.warn("[GenerateImageJob] ActiveStorage attach failed: #{e.message}")
+  rescue KeyError, StandardError => e
+    raise ComfyuiImageService::Error, "Görsel attach başarısız: #{e.message}"
   end
 
-  def attach_data_url(asset, url)
-    header, encoded = url.split(",", 2)
-    return if encoded.blank?
-
-    content_type = header.to_s[/data:(.*?);base64/, 1] || "image/png"
-    data = Base64.decode64(encoded)
-    filename = "ai_post_#{asset.id}.png"
-
-    asset.file.attach(
-      io: StringIO.new(data),
-      filename: filename,
-      content_type: content_type
-    )
-  end
-
-  def attach_remote_url(asset, url)
-    file = URI.open(url)
-    file.rewind if file.respond_to?(:rewind)
-    filename = File.basename(URI.parse(url).path.presence || "ai_post_#{asset.id}.png")
-    content_type = file.respond_to?(:content_type) ? file.content_type : "image/png"
-
-    asset.file.attach(
-      io: file,
-      filename: filename,
-      content_type: content_type
-    )
-  end
-
-  def mark_processing(post, job_id)
+  def mark_processing(post, prompt_id)
     return unless post&.persisted?
 
     post.update!(
       status: "processing",
-      data: merge_data(post, "ai_horde_job_id" => job_id)
+      comfyui_prompt_id: prompt_id
     )
   end
 
   def mark_failed(post, message = nil)
     return unless post&.persisted?
 
-    post.update(status: "failed", data: merge_data(post, "error" => message))
+    post.update(status: "failed", data: merge_data(post, "image_error" => message))
   end
 
   def mark_canceled(post, message = nil)
@@ -116,7 +87,7 @@ class GenerateImageJob < ApplicationJob
 
     post.update(
       status: "canceled",
-      data: merge_data(post, "error" => message, "canceled_at" => Time.current)
+      data: merge_data(post, "canceled_at" => Time.current, "image_error" => message)
     )
   end
 

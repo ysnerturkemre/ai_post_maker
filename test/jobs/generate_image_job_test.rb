@@ -1,38 +1,35 @@
 require "test_helper"
-require "tempfile"
+require "stringio"
 
 class GenerateImageJobTest < ActiveJob::TestCase
   test "creates asset and updates post status" do
     prompt = Prompt.create!(text: "Image prompt", kind: "image")
     post = prompt.posts.create!(status: "draft", kind: "image")
-    file = Tempfile.new([ "ai_post", ".png" ])
-    file.binmode
-    file.write("fake")
-    file.rewind
-    file.define_singleton_method(:content_type) { "image/png" }
 
     service = Object.new
-    service.define_singleton_method(:call) do |canceled: nil, &block|
-      block&.call("job_123")
-      { url: "https://example.com/img.png", width: 100, height: 100 }
+    service.define_singleton_method(:call) do |prompt_text:, client_id: "ai_post_maker", canceled: nil, &block|
+      block&.call("prompt_123")
+      {
+        prompt_id: "prompt_123",
+        image: {
+          io: StringIO.new("fake"),
+          content_type: "image/png",
+          filename: "output.png"
+        }
+      }
     end
 
-    URI.stub(:open, ->(_url) { file }) do
-      AiHordeImageService.stub(:new, ->(*, **){ service }) do
-        assert_difference -> { Asset.count }, 1 do
-          GenerateImageJob.perform_now(prompt.id, post.id)
-        end
+    ComfyuiImageService.stub(:new, ->(*, **){ service }) do
+      assert_difference -> { Asset.count }, 1 do
+        GenerateImageJob.perform_now(prompt.id, post.id)
       end
     end
 
     post.reload
     assert_equal "generated", post.status
     assert_equal 1, post.assets.count
-    assert_equal "job_123", post.data["ai_horde_job_id"]
+    assert_equal "prompt_123", post.comfyui_prompt_id
     assert post.assets.first.file.attached?
-  ensure
-    file&.close
-    file&.unlink
   end
 
   test "skips non-image prompts" do
@@ -48,33 +45,31 @@ class GenerateImageJobTest < ActiveJob::TestCase
     prompt = Prompt.create!(text: "Failing prompt", kind: "image")
     post = prompt.posts.create!(status: "draft", kind: "image")
     service = Object.new
-    def service.call(canceled: nil, &block)
-      raise AiHordeImageService::Error, "boom"
+    def service.call(prompt_text:, client_id: "ai_post_maker", canceled: nil, &block)
+      raise ComfyuiImageService::Error, "boom"
     end
 
-    AiHordeImageService.stub(:new, ->(*, **){ service }) do
-      assert_raises(AiHordeImageService::Error) do
-        GenerateImageJob.perform_now(prompt.id, post.id)
-      end
+    ComfyuiImageService.stub(:new, ->(*, **){ service }) do
+      GenerateImageJob.perform_now(prompt.id, post.id)
     end
 
     post.reload
     assert_equal "failed", post.status
-    assert_equal "boom", post.data["error"]
+    assert_equal "boom", post.data["image_error"]
   end
 
   test "marks post canceled when generation is canceled" do
     prompt = Prompt.create!(text: "Canceled prompt", kind: "image")
     post = prompt.posts.create!(status: "draft", kind: "image")
     service = Object.new
-    service.define_singleton_method(:call) do |canceled: nil, &block|
-      block&.call("job_456")
+    service.define_singleton_method(:call) do |prompt_text:, client_id: "ai_post_maker", canceled: nil, &block|
+      block&.call("prompt_456")
       post.update!(status: "canceled")
-      raise AiHordeImageService::Canceled, "stop" if canceled&.call
-      { url: "https://example.com/img.png", width: 100, height: 100 }
+      raise ComfyuiImageService::Canceled, "stop" if canceled&.call
+      { prompt_id: "prompt_456", image: { io: StringIO.new("fake"), content_type: "image/png", filename: "out.png" } }
     end
 
-    AiHordeImageService.stub(:new, ->(*, **){ service }) do
+    ComfyuiImageService.stub(:new, ->(*, **){ service }) do
       assert_no_difference -> { Asset.count } do
         GenerateImageJob.perform_now(prompt.id, post.id)
       end
@@ -82,7 +77,7 @@ class GenerateImageJobTest < ActiveJob::TestCase
 
     post.reload
     assert_equal "canceled", post.status
-    assert_equal "stop", post.data["error"]
-    assert_equal "job_456", post.data["ai_horde_job_id"]
+    assert_equal "stop", post.data["image_error"]
+    assert_equal "prompt_456", post.comfyui_prompt_id
   end
 end

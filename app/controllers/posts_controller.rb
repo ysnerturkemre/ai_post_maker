@@ -41,12 +41,11 @@ class PostsController < ApplicationController
       return
     end
 
-    job_id = @post.data.is_a?(Hash) ? @post.data["ai_horde_job_id"] : nil
-    if job_id.present?
+    if @post.comfyui_prompt_id.present?
       begin
-        AiHordeImageService.new.cancel(job_id)
-      rescue AiHordeImageService::Error => e
-        Rails.logger.error("[PostsController#cancel] AI Horde: #{e.message}")
+        ComfyuiClient.new.cancel_running
+      rescue ComfyuiClient::Error => e
+        Rails.logger.error("[PostsController#cancel] ComfyUI: #{e.message}")
       end
     end
     @post.update!(
