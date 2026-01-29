@@ -65,4 +65,3 @@ yarn-debug.log*
 
 # === Local agent files ===
 /AGENTS.md
-.beads/issues.jsonl
