@@ -29,8 +29,8 @@
 
 en:
   navbar:
-    title: "AI POST MAKER"
-    subtitle: "Create & share AI-powered Instagram content"
+    title: "PostMaker"
+    subtitle: "AI CREATIVE STUDIO"
     plan_label: "Free Plan"
     user_placeholder: "User"
     logout: "Log out"
@@ -43,20 +43,20 @@ en:
       title: "Create content"
       badge: "manual"
       prompt_label: "Prompt"
-      prompt_placeholder: "E.g. Write a friendly Instagram post about AI with 3 tips..."
-      lang_label: "Caption language"
-      tone_label: "Caption tone"
+      prompt_placeholder: "What's your next masterpiece?..."
+      lang_label: "Ratio"
+      tone_label: "Tone"
       lang_options:
         tr: "Turkish"
         en: "English"
       tone_options:
         friendly: "Friendly"
         formal: "Formal"
-      output_label: "Output type"
+      output_label: "Content Format"
       image_label: "Image"
       video_label: "Video"
       video_help: "Video generation is coming soon."
-      submit: "Create"
+      submit: "Generate"
     recent:
       title: "Latest content"
       subtitle: "Recent creations"

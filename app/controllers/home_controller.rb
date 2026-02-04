@@ -115,13 +115,33 @@ class HomeController < ApplicationController
   end
 
   def current_dashboard_filters
+    if params.key?(:gallery_kind) || params.key?(:search)
+      kind = normalize_kind(params[:gallery_kind])
+      search = params[:search].to_s.strip.presence
+      if kind.present?
+        session[:dashboard_gallery_kind] = kind
+      else
+        session.delete(:dashboard_gallery_kind)
+      end
+      if search.present?
+        session[:dashboard_search] = search
+      else
+        session.delete(:dashboard_search)
+      end
+    else
+      kind = normalize_kind(session[:dashboard_gallery_kind])
+      search = session[:dashboard_search].to_s.presence
+    end
+
     {
-      kind: normalize_kind(params[:kind]),
-      search: params[:search].to_s.strip.presence
+      kind: kind,
+      search: search
     }
   end
 
   def normalize_kind(kind)
+    return nil if kind.to_s == "all"
+
     %w[image video].include?(kind.to_s) ? kind.to_s : nil
   end
 
@@ -135,7 +155,7 @@ class HomeController < ApplicationController
 
   def poller_params(filters)
     params = {}
-    params[:kind] = filters[:kind] if filters[:kind].present?
+    params[:gallery_kind] = filters[:kind] if filters[:kind].present?
     params[:search] = filters[:search] if filters[:search].present?
     params
   end

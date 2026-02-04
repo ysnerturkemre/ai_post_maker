@@ -1,35 +1,60 @@
 class Panels::NavBarComponent < ApplicationComponent
   def view_template
-    div class: "header-bar" do
-      div class: "brand" do
-        div class: "logo-blob"
-        div do
-          h1(class: "h5 mb-0 fw-bold text-body-emphasis") { I18n.t("navbar.title") }
-          p(class: "text-muted small mb-0") { I18n.t("navbar.subtitle") }
-        end
+    header class: "glass-nav" do
+      div class: "nav-inner" do
+        brand_block
+        # nav_links # temporarily disabled
+        right_actions
       end
-
-      right_actions
     end
   end
 
   private
 
+  def brand_block
+    div class: "brand" do
+      div class: "logo-blob" do
+        span class: "material-symbols-outlined logo-icon" do
+          "auto_awesome"
+        end
+      end
+      div do
+        h1(class: "brand-title") do
+          plain I18n.t("navbar.title")
+          span(class: "brand-accent") { ".pro" }
+        end
+        p(class: "brand-subtitle") { I18n.t("navbar.subtitle") }
+      end
+    end
+  end
+
+  def nav_links
+    nav class: "nav-links" do
+      a(class: "nav-link-pill is-active", href: "#") { "Dashboard" }
+      a(class: "nav-link-pill", href: "#") { "Library" }
+      a(class: "nav-link-pill", href: "#") { "Analytics" }
+    end
+  end
+
   def right_actions
-    div class: "d-flex align-items-center gap-3 flex-wrap" do
-      span class: "chip" do
-        I18n.t("navbar.plan_label")
-      end
-
-      div class: "d-flex align-items-center gap-2" do
-        div(class: "avatar") { user_initial }
-        span(class: "fw-semibold text-body") { user_display_name }
-      end
-
+    div class: "nav-actions" do
+      credits_block
       a href: destroy_user_session_path,
-        class: "btn btn-outline-purple btn-sm",
+        class: "avatar-tile",
         data: { turbo_method: :delete } do
-        I18n.t("navbar.logout")
+        user_initial
+      end
+    end
+  end
+
+  def credits_block
+    div class: "credits-block" do
+      div class: "credits-meta" do
+        span(class: "credits-label") { "Credits" }
+        span(class: "credits-value") { "420 / 1000" }
+      end
+      div class: "credits-bar" do
+        div class: "credits-bar-fill"
       end
     end
   end

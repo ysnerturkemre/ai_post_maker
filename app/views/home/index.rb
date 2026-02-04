@@ -7,31 +7,24 @@ class Views::Home::Index < ApplicationComponent
   end
 
   def view_template
-    div class: "page-container container" do
-      render ::Panels::NavBarComponent.new
-      divider_line
-      glass_card
+    render ::Panels::NavBarComponent.new
+    div class: "dashboard-main" do
+      main_content
     end
   end
 
   private
 
-  def divider_line
-    div class: "section-divider"
-  end
-
-  def glass_card
-    div class: "glass-card" do
-      div class: "row g-4" do
-        div class: "col-12 col-lg-6 d-flex" do
-          turbo_frame_tag "prompt_form" do
-            panel_surface(class_name: "prompt-panel") { render ::Panels::CreatePanelComponent.new(prompt: @prompt) }
-          end
+  def main_content
+    div class: "dashboard-grid" do
+      aside class: "prompt-column" do
+        turbo_frame_tag "prompt_form" do
+          panel_surface(class_name: "prompt-panel") { render ::Panels::CreatePanelComponent.new(prompt: @prompt) }
         end
-        div class: "col-12 col-lg-6" do
-          turbo_frame_tag "dashboard_jobs", data: poller_data do
-            render ::Dashboard::RightPanelComponent.new(recent_jobs: @recent_jobs, filters: @filters)
-          end
+      end
+      section class: "gallery-column" do
+        turbo_frame_tag "dashboard_jobs", data: poller_data do
+          render ::Dashboard::RightPanelComponent.new(recent_jobs: @recent_jobs, filters: @filters)
         end
       end
     end
@@ -54,7 +47,7 @@ class Views::Home::Index < ApplicationComponent
 
   def poller_params
     params = {}
-    params[:kind] = @filters[:kind] if @filters[:kind].present?
+    params[:gallery_kind] = @filters[:kind] if @filters[:kind].present?
     params[:search] = @filters[:search] if @filters[:search].present?
     params
   end

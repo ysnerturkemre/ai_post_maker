@@ -4,6 +4,7 @@ module Dashboard
   class JobMiniCardComponent < ApplicationComponent
     include Phlex::Rails::Helpers::ButtonTo
     include ActionView::Helpers::FormTagHelper
+    include ActionView::Helpers::DateHelper
 
     def initialize(job:)
       @job = job
@@ -12,26 +13,9 @@ module Dashboard
     def view_template
       turbo_frame_tag dom_id(@job) do
         div class: "col" do
-          div class: "card h-100 recent-card position-relative" do
-            div class: "position-absolute top-0 end-0 mt-2 me-2" do
-              status_badge(@job.status)
-            end
-
-            if @job.asset_url.present?
-              div class: "ratio ratio-1x1" do
-                img src: @job.asset_url, alt: "Generated asset", class: "recent-thumb-image"
-              end
-            end
-
-            div class: "card-body d-flex flex-column gap-2 h-100" do
-              div class: "d-flex flex-column gap-2 flex-grow-1" do
-                p(class: "mb-0 small text-muted") { truncate(@job.prompt.to_s, length: 80) }
-                caption_snippet
-                mini_meta
-                created_at_text
-              end
-              action_buttons
-            end
+          article class: "recent-card h-100" do
+            media_block
+            card_body
           end
         end
       end
@@ -39,34 +23,51 @@ module Dashboard
 
     private
 
-    def status_badge(status)
-      span class: "badge #{status_class(status)} px-2 py-1" do
-        status_label(status)
+    def media_block
+      div class: "card-media" do
+        if @job.asset_url.present?
+          img src: @job.asset_url, alt: "Generated asset", class: "recent-thumb-image"
+        end
+        div class: "media-badge" do
+          time_badge_text
+        end
       end
     end
 
-    def mini_meta
-      div class: "d-flex align-items-center gap-2 small text-white" do
-        span class: "badge bg-light text-body" do
-          output_label(@job.output_type)
+    def card_body
+      div class: "card-body recent-card-body" do
+        div class: "card-type" do
+          "Type: #{output_label(@job.output_type)}"
         end
-        if @job.asset_url.blank? && @job.status.to_s == "failed"
-          span class: "text-danger-emphasis" do
-            @job.error_message.presence || I18n.t("panels.recent.default_error")
-          end
-        end
+        p(class: "card-prompt") { truncate(@job.prompt.to_s, length: 120) }
+        caption_snippet
+        action_buttons
+        tag_row
+      end
+    end
+
+    def time_badge_text
+      return "Just now" unless @job.created_at
+
+      minutes = ((Time.zone.now - @job.created_at) / 60).floor
+      if minutes < 60
+        "#{minutes.zero? ? 1 : minutes}m ago"
+      elsif minutes < 1440
+        "#{(minutes / 60).round}hr ago"
+      else
+        "#{(minutes / 1440).round}d ago"
       end
     end
 
     def caption_snippet
+      return if @job.caption.blank? && @job.caption_error.blank?
+
       if @job.caption.present?
         div class: "caption-surface" do
-          p(class: "mb-0 small text-white-50") { truncate(@job.caption.to_s, length: 80) }
+          p(class: "mb-0 small text-body-secondary") { truncate(@job.caption.to_s, length: 90) }
         end
         return
       end
-
-      return if @job.caption_error.blank?
 
       div class: "caption-surface caption-error" do
         p(class: "mb-0 small text-danger-emphasis") do
@@ -75,42 +76,23 @@ module Dashboard
       end
     end
 
-    def created_at_text
-      return unless @job.created_at
-
-      p(class: "mb-0 text-muted small") do
-        I18n.l(@job.created_at, format: :short)
-      end
-    end
-
-    def status_label(status)
-      I18n.t("panels.recent.statuses.#{status}", default: status.to_s)
-    end
-
-    def status_class(status)
-      case status.to_s
-      when "queued" then "bg-warning text-dark"
-      when "processing" then "bg-info text-dark"
-      when "generated", "published" then "bg-success"
-      when "failed" then "bg-danger"
-      when "canceled" then "bg-secondary"
-      else "bg-secondary"
-      end
-    end
-
     def output_label(kind)
-      kind.to_s == "video" ? I18n.t("panels.create.video_label") : I18n.t("panels.create.image_label")
+      kind.to_s == "video" ? "16:9 Video" : "1:1 Portrait"
     end
 
     def action_buttons
       return unless @job.respond_to?(:id) && @job.id.present?
 
-      div class: "d-grid gap-2" do
-        download_button
-        copy_button
-        share_button
-        cancel_button
-        delete_button
+      div class: "card-actions" do
+        div class: "action-left" do
+          download_button
+          copy_button
+          share_button
+        end
+        div class: "action-right" do
+          cancel_button
+          delete_button
+        end
       end
     end
 
@@ -118,18 +100,18 @@ module Dashboard
       return if @job.asset_url.blank?
 
       a href: @job.asset_url,
-        class: "btn btn-outline-light btn-sm w-100",
+        class: "icon-button",
         download: true,
         target: "_blank",
         rel: "noopener" do
-        I18n.t("panels.recent.download")
+        span(class: "material-symbols-outlined") { "download" }
       end
     end
 
     def copy_button
       return if @job.caption.blank?
 
-      button class: "btn btn-outline-light btn-sm w-100",
+      button class: "icon-button",
         type: "button",
         data: {
           controller: "clipboard",
@@ -137,7 +119,7 @@ module Dashboard
           clipboard_text_value: @job.caption,
           clipboard_copied_label_value: I18n.t("panels.recent.copy_done")
         } do
-        I18n.t("panels.recent.copy_caption")
+        span(class: "material-symbols-outlined") { "content_copy" }
       end
     end
 
@@ -145,35 +127,53 @@ module Dashboard
       return if @job.asset_url.blank? && @job.caption.blank?
 
       a href: "https://www.instagram.com/",
-        class: "btn btn-outline-light btn-sm w-100 btn-share-prominent",
+        class: "icon-button instagram-gradient",
         target: "_blank",
         rel: "noopener" do
-        I18n.t("panels.recent.share")
+        span(class: "material-symbols-outlined") { "share" }
       end
     end
 
     def cancel_button
       return unless cancelable?
 
-      button_to cancel_post_path(@job.id),
-        method: :post,
-        class: "btn btn-outline-warning btn-sm w-100",
-        data: { turbo_confirm: I18n.t("dashboard.cancel_confirm") } do
-        I18n.t("dashboard.cancel_job")
+      form_with url: cancel_post_path(@job.id), method: :post, class: "action-form" do
+        button class: "icon-button warning-button",
+          type: "submit",
+          data: { turbo_confirm: I18n.t("dashboard.cancel_confirm") } do
+          span(class: "material-symbols-outlined") { "close" }
+        end
       end
     end
 
     def delete_button
-      button_to post_path(@job.id),
-        method: :delete,
-        class: "btn btn-outline-danger btn-sm w-100",
-        data: { turbo_confirm: I18n.t("panels.recent.delete_confirm") } do
-        I18n.t("panels.recent.delete_button")
+      form_with url: post_path(@job.id), method: :delete, class: "action-form" do
+        button class: "icon-button danger-button",
+          type: "submit",
+          data: { turbo_confirm: I18n.t("panels.recent.delete_confirm") } do
+          span(class: "material-symbols-outlined") { "delete" }
+        end
       end
     end
 
     def cancelable?
       %w[queued processing].include?(@job.status.to_s)
+    end
+
+    def tag_row
+      div class: "card-tags" do
+        tag_labels.each_with_index do |label, index|
+          span class: index.zero? ? "tag tag-primary" : "tag" do
+            "##{label}"
+          end
+        end
+      end
+    end
+
+    def tag_labels
+      primary = @job.output_type.to_s == "video" ? "VIDEO" : "IMAGE"
+      secondary = @job.status.to_s.presence || "AI"
+      [primary, secondary.upcase]
     end
   end
 end
