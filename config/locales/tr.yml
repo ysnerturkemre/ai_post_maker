@@ -99,6 +99,10 @@ tr:
       submit: "Giriş Yap"
       no_account: "Hesabın yok mu?"
       sign_up: "Kayıt ol"
+    sign_up:
+      submit: "Create Account"
+      have_account: "Already have an account?"
+      sign_in: "Sign In"
   flash:
     sessions:
       signed_in: "Giriş başarılı."

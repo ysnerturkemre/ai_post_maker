@@ -9,16 +9,9 @@ class Devise::Registrations::SignUpView < ApplicationComponent
   def view_template
     content_for :full_screen, true
 
-    turbo_frame_tag "auth_frame" do
-      render Auth::CardComponent.new(
-        title: "Kayıt Ol",
-        subtitle: "Hesabını oluştur ve AI workspace'ine giriş yap."
-      ) do
-        flash_messages
-        error_messages
-        register_form
-        footer_links
-      end
+    div class: "auth-page" do
+      left_visual
+      right_panel
     end
 
     flash_dismiss_script
@@ -43,36 +36,60 @@ class Devise::Registrations::SignUpView < ApplicationComponent
   end
 
   def register_form
-    bootstrap_form_with model: resource,
+    form_with model: resource,
       url: user_registration_path,
       method: :post,
       local: true,
-      data: { turbo_frame: "_top" } do |f|
+      data: { turbo_frame: "_top" },
+      class: "d-flex flex-column gap-4" do |f|
 
-      f.custom_control :email,
-        label: { text: "E-posta", class: "form-label fw-semibold text-body-secondary" } do
-        div(class: "input-group input-group-lg") do
-          span(class: "input-group-text bg-primary-subtle text-primary fw-semibold border-0 shadow-sm") { "@" }
-          f.email_field_without_bootstrap :email,
+      div class: "d-flex flex-column gap-2" do
+        label class: "auth-label" do
+          I18n.t("auth.sign_in.email")
+        end
+        div class: "glass-input auth-input-row" do
+          span class: "material-symbols-outlined auth-icon" do
+            "mail"
+          end
+          f.email_field :email,
             autofocus: true,
-            class: "form-control border-0 bg-white shadow-sm",
-            placeholder: "ornek@mail.com"
+            placeholder: I18n.t("auth.sign_in.email_placeholder")
         end
       end
 
-      password_field(f, :password, "Şifre", "••••••••")
+      div class: "d-flex flex-column gap-2" do
+        label class: "auth-label" do
+          I18n.t("auth.sign_in.password")
+        end
+        div class: "glass-input auth-input-row" do
+          span(class: "material-symbols-outlined auth-icon") { "lock" }
+          f.password_field :password,
+            placeholder: I18n.t("auth.sign_in.password_placeholder")
+        end
+      end
 
       if devise_mapping.confirmable?
-        div(class: "text-muted small mb-2") { "Onay e-postası alacaksın." }
+        div(class: "auth-inline-row") do
+          span { "Onay e-postası alacaksın." }
+        end
       end
 
-      password_field(f, :password_confirmation, "Şifre (tekrar)", "••••••••")
+      div class: "d-flex flex-column gap-2" do
+        label class: "auth-label" do
+          I18n.t("auth.sign_in.password")
+        end
+        div class: "glass-input auth-input-row" do
+          span(class: "material-symbols-outlined auth-icon") { "lock" }
+          f.password_field :password_confirmation,
+            placeholder: I18n.t("auth.sign_in.password_placeholder")
+        end
+      end
 
-      div(class: "d-grid mb-3") do
-        f.submit "Kayıt ol", class: "btn btn-primary btn-lg shadow-sm"
+      button class: "auth-submit", type: "submit" do
+        I18n.t("auth.sign_up.submit")
+        span(class: "material-symbols-outlined") { "arrow_forward" }
       end
     end
-
   end
 
   def flash_messages
@@ -102,26 +119,45 @@ class Devise::Registrations::SignUpView < ApplicationComponent
   end
 
   def footer_links
-    div(class: "text-center") do
-      small(class: "text-muted") do
-        span { "Zaten hesabın var mı? " }
-        a href: new_user_session_path,
-          class: "fw-semibold text-decoration-none",
-          data: { turbo_frame: "auth_frame" } do
-          "Giriş yap"
+    div class: "text-center auth-muted-link" do
+      span { I18n.t("auth.sign_up.have_account") + " " }
+      a href: new_user_session_path do
+        I18n.t("auth.sign_up.sign_in")
+      end
+    end
+  end
+
+  def left_visual
+    div class: "auth-left" do
+      div class: "auth-left-image",
+        style: "background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC0AKcQkEQMju86NU66WAuw-g_6cUvLC54kBjuUkOANC9y-6ivWYE5xC5-1mnBwNwCetbnvOZH0kj9C4eFhM9UZdt5OpERaSmIvhiV1R3zUcKhHaZzajTxa4RcIIcQ9ceJUnPCezSKQ1NEd2RaQoLxw3dbRDJV2ULmeLKnvxIKqw0dnRMnKUSriDX5JuVRPmyF8CTE_GL2DMkSsX6IKOWvv2lGoUNFIbjj4kTcXLs_P7Nj_XryfPs1LS4TnlWHlSc7eEmtji6RPk7ye');"
+      div class: "auth-left-overlay"
+      div class: "auth-left-glow"
+    end
+  end
+
+  def right_panel
+    div class: "auth-right" do
+      div class: "auth-right-inner" do
+        div class: "auth-card" do
+          header_block
+          flash_messages
+          error_messages
+          register_form
+          footer_links
         end
       end
     end
   end
 
-  def password_field(form, field, label_text, placeholder)
-    form.custom_control field,
-      label: { text: label_text, class: "form-label fw-semibold text-body-secondary" } do
-      div(class: "input-group input-group-lg") do
-        span(class: "input-group-text bg-primary-subtle text-primary fw-semibold border-0 shadow-sm") { "••" }
-        form.password_field_without_bootstrap field,
-          class: "form-control border-0 bg-white shadow-sm text-body",
-          placeholder: placeholder
+  def header_block
+    div class: "d-flex flex-column gap-2" do
+      h1 class: "auth-title" do
+        plain "Join "
+        span { "Postmaker.pro" }
+      end
+      p class: "auth-subtitle" do
+        "Unleash your creativity with AI."
       end
     end
   end

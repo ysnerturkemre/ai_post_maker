@@ -121,6 +121,10 @@ en:
       submit: "Sign in"
       no_account: "Don't have an account?"
       sign_up: "Sign up"
+    sign_up:
+      submit: "Create Account"
+      have_account: "Already have an account?"
+      sign_in: "Sign In"
   flash:
     sessions:
       signed_in: "Signed in successfully."

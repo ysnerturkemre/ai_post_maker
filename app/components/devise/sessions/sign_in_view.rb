@@ -11,20 +11,13 @@ class Devise::Sessions::SignInView < ApplicationComponent
   def view_template
     content_for :full_screen, true
 
-    turbo_frame_tag "auth_frame" do
-      render Auth::CardComponent.new(
-        title: I18n.t("auth.sign_in.title"),
-        subtitle: I18n.t("auth.sign_in.subtitle")
-      ) do
-        flash_messages
-        error_messages
-        login_form
-        footer_links
-      end
-
-      auto_redirect_script if redirect_path && redirect_delay_ms
-      flash_dismiss_script
+    div class: "auth-page" do
+      left_visual
+      right_panel
     end
+
+    auto_redirect_script if redirect_path && redirect_delay_ms
+    flash_dismiss_script
   end
 
   private
@@ -72,64 +65,106 @@ class Devise::Sessions::SignInView < ApplicationComponent
   end
 
   def login_form
-    bootstrap_form_with model: resource,
+    form_with model: resource,
       url: user_session_path,
       method: :post,
       local: true,
-      data: { turbo: false } do |f|
+      data: { turbo: false },
+      class: "d-flex flex-column gap-4" do |f|
 
-      f.custom_control :email,
-        label: { text: I18n.t("auth.sign_in.email"), class: "form-label fw-semibold text-body-secondary" } do
-        div(class: "input-group input-group-lg") do
-          span(class: "input-group-text bg-primary-subtle text-primary fw-semibold border-0 shadow-sm") { "@" }
-          f.email_field_without_bootstrap :email,
+      div class: "d-flex flex-column gap-2" do
+        label class: "auth-label" do
+          I18n.t("auth.sign_in.email")
+        end
+        div class: "glass-input auth-input-row" do
+          span class: "material-symbols-outlined auth-icon" do
+            "mail"
+          end
+          f.email_field :email,
             autofocus: true,
-            class: "form-control border-0 bg-white shadow-sm",
             placeholder: I18n.t("auth.sign_in.email_placeholder")
         end
       end
 
-      f.custom_control :password,
-        label: { text: I18n.t("auth.sign_in.password"), class: "form-label fw-semibold text-body-secondary" } do
-        div(class: "input-group input-group-lg") do
-          span(class: "input-group-text bg-primary-subtle text-primary fw-semibold border-0 shadow-sm") { "••" }
-          f.password_field_without_bootstrap :password,
-            class: "form-control border-0 bg-white shadow-sm text-body",
+      div class: "d-flex flex-column gap-2" do
+        label class: "auth-label" do
+          I18n.t("auth.sign_in.password")
+        end
+        div class: "glass-input auth-input-row" do
+          span class: "material-symbols-outlined auth-icon" do
+            "lock"
+          end
+          f.password_field :password,
             placeholder: I18n.t("auth.sign_in.password_placeholder")
         end
       end
 
       if devise_mapping.rememberable?
-        div(class: "d-flex justify-content-between align-items-center mb-3") do
-          f.check_box :remember_me,
-            id: "remember_me",
-            class: "form-check-input",
-            wrapper_class: false,
-            label: I18n.t("auth.sign_in.remember_me")
+        div class: "auth-inline-row" do
+          div class: "d-flex align-items-center gap-2" do
+            f.check_box :remember_me,
+              id: "remember_me",
+              class: "form-check-input"
+            label for: "remember_me" do
+              I18n.t("auth.sign_in.remember_me")
+            end
+          end
 
           if devise_mapping.recoverable?
-            a href: new_user_password_path, class: "small text-decoration-none" do
+            a href: new_user_password_path, class: "auth-muted-link" do
               I18n.t("auth.sign_in.forgot_password")
             end
           end
         end
       end
 
-      div(class: "d-grid mb-3") do
-        f.submit I18n.t("auth.sign_in.submit"), class: "btn btn-primary btn-lg shadow-sm"
+      button class: "auth-submit", type: "submit" do
+        I18n.t("auth.sign_in.submit")
+        span(class: "material-symbols-outlined") { "arrow_forward" }
       end
     end
   end
 
   def footer_links
-    div(class: "text-center") do
-      small(class: "text-muted") do
-        span { I18n.t("auth.sign_in.no_account") + " " }
-        a href: new_user_registration_path,
-          class: "fw-semibold text-decoration-none",
-          data: { turbo_frame: "auth_frame" } do
-          I18n.t("auth.sign_in.sign_up")
+    div class: "text-center auth-muted-link" do
+      span { I18n.t("auth.sign_in.no_account") + " " }
+      a href: new_user_registration_path do
+        I18n.t("auth.sign_in.sign_up")
+      end
+    end
+  end
+
+  def left_visual
+    div class: "auth-left" do
+      div class: "auth-left-image",
+        style: "background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC0AKcQkEQMju86NU66WAuw-g_6cUvLC54kBjuUkOANC9y-6ivWYE5xC5-1mnBwNwCetbnvOZH0kj9C4eFhM9UZdt5OpERaSmIvhiV1R3zUcKhHaZzajTxa4RcIIcQ9ceJUnPCezSKQ1NEd2RaQoLxw3dbRDJV2ULmeLKnvxIKqw0dnRMnKUSriDX5JuVRPmyF8CTE_GL2DMkSsX6IKOWvv2lGoUNFIbjj4kTcXLs_P7Nj_XryfPs1LS4TnlWHlSc7eEmtji6RPk7ye');"
+      div class: "auth-left-overlay"
+      div class: "auth-left-glow"
+    end
+  end
+
+  def right_panel
+    div class: "auth-right" do
+      div class: "auth-right-inner" do
+        div class: "auth-card" do
+          header_block
+          flash_messages
+          error_messages
+          login_form
+          footer_links
         end
+      end
+    end
+  end
+
+  def header_block
+    div class: "d-flex flex-column gap-2" do
+      h1 class: "auth-title" do
+        plain "Welcome back "
+        span { "Postmaker.pro" }
+      end
+      p class: "auth-subtitle" do
+        I18n.t("auth.sign_in.subtitle")
       end
     end
   end

@@ -1,4 +1,5 @@
 class Panels::NavBarComponent < ApplicationComponent
+  include Phlex::Rails::Helpers::ButtonTo
   def view_template
     header class: "glass-nav" do
       div class: "nav-inner" do
@@ -39,11 +40,7 @@ class Panels::NavBarComponent < ApplicationComponent
   def right_actions
     div class: "nav-actions" do
       credits_block
-      a href: destroy_user_session_path,
-        class: "avatar-tile",
-        data: { turbo_method: :delete } do
-        user_initial
-      end
+      logout_button
     end
   end
 
@@ -56,6 +53,15 @@ class Panels::NavBarComponent < ApplicationComponent
       div class: "credits-bar" do
         div class: "credits-bar-fill"
       end
+    end
+  end
+
+  def logout_button
+    button_to destroy_user_session_path,
+      method: :delete,
+      form_class: "logout-form",
+      class: "logout-button" do
+      I18n.t("navbar.logout")
     end
   end
 
