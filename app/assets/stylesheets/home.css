@@ -4,6 +4,8 @@ body {
   background: linear-gradient(145deg, #5963c2 0%, #6f7ad8 50%, #8a94ec 100%);
   min-height: 100vh;
   color: #e8e9ff;
+  font-size: 16.5px;
+  line-height: 1.6;
 }
 
 .page-container {
@@ -83,6 +85,14 @@ body {
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
+.prompt-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+  flex: 1 1 auto;
+}
+
 .panel-surface .form-label,
 .panel-surface .form-check-label,
 .panel-surface label {
@@ -116,7 +126,9 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 14px;
   padding: 14px;
-  min-height: 160px;
+  min-height: 260px;
+  line-height: 1.55;
+  resize: vertical;
   width: 100%;
   background: rgba(255, 255, 255, 0.18);
   color: #0f152e;
@@ -212,6 +224,51 @@ body {
 
 .recent-card .card-body {
   padding: 12px;
+}
+
+.caption-surface {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.caption-surface.caption-error {
+  background: rgba(255, 220, 220, 0.18);
+  border-color: rgba(255, 200, 200, 0.35);
+}
+
+.btn-share-prominent {
+  font-weight: 700;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.95rem;
+}
+
+.gallery-toggle-group .filter-toggle {
+  font-weight: 600;
+  border-width: 1px;
+}
+
+.gallery-toggle-group .filter-toggle.btn-light {
+  color: #0f152e;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.filter-search-input {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #0f152e;
+  min-width: 200px;
+  flex: 1 1 240px;
+}
+
+.filter-search-input::placeholder {
+  color: rgba(15, 21, 46, 0.6);
+}
+
+.filter-search-button {
+  white-space: nowrap;
+  font-weight: 600;
 }
 
 .hero-card {

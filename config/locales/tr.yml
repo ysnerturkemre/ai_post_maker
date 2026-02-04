@@ -41,6 +41,12 @@ tr:
       download: "İndir"
       copy_caption: "Açıklamayı kopyala"
       copy_done: "Kopyalandı!"
+      filters:
+        all: "Tümü"
+        images: "Görseller"
+        videos: "Videolar"
+        search_placeholder: "Prompt metninde ara"
+        search_button: "Ara"
       empty: "Henüz içerik üretmedin."
       badge_generated: "generated"
       sample: "Örnek içerik %{index}"

@@ -60,14 +60,18 @@ module Dashboard
 
     def caption_snippet
       if @job.caption.present?
-        p(class: "mb-0 small text-white-50") { truncate(@job.caption.to_s, length: 80) }
+        div class: "caption-surface" do
+          p(class: "mb-0 small text-white-50") { truncate(@job.caption.to_s, length: 80) }
+        end
         return
       end
 
       return if @job.caption_error.blank?
 
-      p(class: "mb-0 small text-danger-emphasis") do
-        I18n.t("panels.recent.caption_error", message: @job.caption_error)
+      div class: "caption-surface caption-error" do
+        p(class: "mb-0 small text-danger-emphasis") do
+          I18n.t("panels.recent.caption_error", message: @job.caption_error)
+        end
       end
     end
 
@@ -141,7 +145,7 @@ module Dashboard
       return if @job.asset_url.blank? && @job.caption.blank?
 
       a href: "https://www.instagram.com/",
-        class: "btn btn-outline-light btn-sm w-100",
+        class: "btn btn-outline-light btn-sm w-100 btn-share-prominent",
         target: "_blank",
         rel: "noopener" do
         I18n.t("panels.recent.share")

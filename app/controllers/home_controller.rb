@@ -51,13 +51,20 @@ class HomeController < ApplicationController
   end
 
   def dashboard_jobs
-    recent_jobs = fetch_dashboard_jobs
+    filters = current_dashboard_filters
+    recent_jobs = fetch_dashboard_jobs(filters)
 
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("dashboard_jobs", dashboard_jobs_frame(recent_jobs))
+        render turbo_stream: turbo_stream.replace("dashboard_jobs", dashboard_jobs_frame(recent_jobs, filters))
       end
-      format.html { redirect_to home_path }
+      format.html do
+        if turbo_frame_request?
+          render html: dashboard_jobs_frame(recent_jobs, filters)
+        else
+          redirect_to home_path
+        end
+      end
     end
   end
 
@@ -69,17 +76,19 @@ class HomeController < ApplicationController
 
   def render_index(prompt:, status: :ok)
     recent_posts = current_user.posts.includes(:assets, :prompt).order(created_at: :desc).limit(6)
-    recent_jobs = fetch_dashboard_jobs
+    filters = current_dashboard_filters
+    recent_jobs = fetch_dashboard_jobs(filters)
 
     render Views::Home::Index.new(
       recent_posts: recent_posts,
       recent_jobs: recent_jobs,
-      prompt: prompt
+      prompt: prompt,
+      filters: filters
     ), status: status
   end
 
   # Recent jobs = kuyruktaki ve tamamlanan/başarısız olan Post'lar
-  def fetch_dashboard_jobs
+  def fetch_dashboard_jobs(filters = current_dashboard_filters)
     recent_statuses = %w[queued processing generated published failed canceled]
 
     recent_posts = current_user.posts.includes(:assets, :prompt)
@@ -87,13 +96,48 @@ class HomeController < ApplicationController
       .order(created_at: :desc)
       .limit(12)
 
+    if filters[:kind].present?
+      recent_posts = recent_posts.where(kind: filters[:kind])
+    end
+
+    if filters[:search].present?
+      term = ActiveRecord::Base.sanitize_sql_like(filters[:search])
+      recent_posts = recent_posts.joins(:prompt).where("prompts.text ILIKE ?", "%#{term}%")
+    end
+
     recent_posts.map { |p| build_job_view(p) }
   end
 
-  def dashboard_jobs_frame(recent_jobs)
-    view_context.turbo_frame_tag("dashboard_jobs") do
-      view_context.render(Dashboard::RightPanelComponent.new(recent_jobs: recent_jobs))
+  def dashboard_jobs_frame(recent_jobs, filters = current_dashboard_filters)
+    view_context.turbo_frame_tag("dashboard_jobs", data: poller_data(filters)) do
+      view_context.render(Dashboard::RightPanelComponent.new(recent_jobs: recent_jobs, filters: filters))
     end
+  end
+
+  def current_dashboard_filters
+    {
+      kind: normalize_kind(params[:kind]),
+      search: params[:search].to_s.strip.presence
+    }
+  end
+
+  def normalize_kind(kind)
+    %w[image video].include?(kind.to_s) ? kind.to_s : nil
+  end
+
+  def poller_data(filters)
+    {
+      controller: "poller",
+      poller_url_value: home_dashboard_jobs_path(format: :turbo_stream, **poller_params(filters)),
+      poller_interval_value: 5
+    }
+  end
+
+  def poller_params(filters)
+    params = {}
+    params[:kind] = filters[:kind] if filters[:kind].present?
+    params[:search] = filters[:search] if filters[:search].present?
+    params
   end
 
   def build_job_view(post)

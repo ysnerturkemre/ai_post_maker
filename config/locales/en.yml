@@ -64,6 +64,12 @@ en:
       download: "Download"
       copy_caption: "Copy caption"
       copy_done: "Copied!"
+      filters:
+        all: "All"
+        images: "Images"
+        videos: "Videos"
+        search_placeholder: "Search by prompt text"
+        search_button: "Search"
       empty: "You haven't generated content yet."
       badge_generated: "generated"
       sample: "Sample content %{index}"

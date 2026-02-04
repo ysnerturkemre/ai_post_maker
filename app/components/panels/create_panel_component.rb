@@ -13,13 +13,13 @@ class Panels::CreatePanelComponent < ApplicationComponent
 
     error_messages
 
-    bootstrap_form_with model: @prompt, url: home_path, method: :post, class: "d-flex flex-column gap-3" do |f|
+    bootstrap_form_with model: @prompt, url: home_path, method: :post, class: "d-flex flex-column gap-3 h-100" do |f|
       f.text_area :text,
         label: I18n.t("panels.create.prompt_label"),
         label_class: "form-label fw-semibold text-white",
         placeholder: I18n.t("panels.create.prompt_placeholder"),
         rows: 6,
-        class: "prompt-input"
+        class: "prompt-input flex-grow-1"
 
       f.form_group :kind,
         label: { text: I18n.t("panels.create.output_label"), class: "form-label fw-semibold text-white mb-2" } do
