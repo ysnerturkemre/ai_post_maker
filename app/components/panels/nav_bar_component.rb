@@ -39,7 +39,7 @@ class Panels::NavBarComponent < ApplicationComponent
 
   def right_actions
     div class: "nav-actions" do
-      credits_block
+      # credits_block
       logout_button
     end
   end
