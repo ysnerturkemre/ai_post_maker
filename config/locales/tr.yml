@@ -43,9 +43,8 @@ tr:
       copy_caption: "Açıklamayı kopyala"
       copy_done: "Kopyalandı!"
       no_preview: "Önizleme görseli bulunamadı."
-      fallback_title: "Platform Yönlendirmesi"
-      fallback_description: "%{platform} için direkt paylaşım desteklenmiyor. Görseli indirip açıklamayı kopyalayarak paylaşabilirsin."
-      back_to_home: "Panele dön"
+      share_landing_title: "Paylaşılan Görsel"
+      share_landing_copy_link_hint: "Bu sayfa linki"
       filters:
         all: "Tümü"
         images: "Görseller"

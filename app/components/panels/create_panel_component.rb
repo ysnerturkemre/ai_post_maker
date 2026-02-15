@@ -4,12 +4,19 @@ class Panels::CreatePanelComponent < ApplicationComponent
   end
 
   def view_template
+    div class: "panel-title" do
+      h4(class: "mb-0") { I18n.t("panels.create.title") }
+      span class: "badge-manual" do
+        I18n.t("panels.create.badge")
+      end
+    end
+
     error_messages
 
-    form_with model: @prompt, url: home_path, method: :post, class: "d-flex flex-column h-100 gap-4" do |f|
+    bootstrap_form_with model: @prompt, url: home_path, method: :post, class: "d-flex flex-column gap-3 h-100" do |f|
       div class: "prompt-header" do
         label class: "prompt-header-label" do
-          "Vision & Prompt"
+          I18n.t("panels.create.prompt_label")
         end
         button class: "prompt-reset", type: "reset" do
           span(class: "material-symbols-outlined") { "close" }
@@ -18,75 +25,51 @@ class Panels::CreatePanelComponent < ApplicationComponent
       end
 
       f.text_area :text,
+        label: false,
         placeholder: I18n.t("panels.create.prompt_placeholder"),
-        rows: 8,
+        rows: 6,
         class: "prompt-input flex-grow-1"
 
-      div class: "row g-3" do
-        div class: "col-12 col-md-6" do
-          div class: "form-stack" do
-            label class: "field-label" do
-              I18n.t("panels.create.tone_label")
-            end
-            f.select :tone,
-              tone_options,
-              { selected: @prompt.tone.presence || LocalCaptionService::DEFAULT_TONE },
-              class: "form-select"
-          end
+      f.form_group :kind,
+        label: { text: I18n.t("panels.create.output_label"), class: "form-label fw-semibold text-white mb-2" } do
+        div class: "d-flex gap-3 flex-wrap" do
+          f.radio_button :kind,
+            "image",
+            label: I18n.t("panels.create.image_label"),
+            inline: true,
+            wrapper_class: "text-white",
+            label_class: "ms-1 fw-semibold text-white"
+          f.radio_button :kind,
+            "video",
+            label: I18n.t("panels.create.video_label"),
+            inline: true,
+            wrapper_class: "text-white-50",
+            label_class: "ms-1 fw-semibold text-white-50",
+            disabled: true
         end
-        div class: "col-12 col-md-6" do
-          div class: "form-stack" do
-            label class: "field-label" do
-              I18n.t("panels.create.lang_label")
-            end
-            f.select :lang,
-              lang_options,
-              { selected: @prompt.lang.presence || LocalCaptionService::DEFAULT_LANG },
-              class: "form-select"
-          end
-        end
-      end
-
-      div class: "form-stack" do
-        label class: "field-label" do
-          I18n.t("panels.create.output_label")
-        end
-        div class: "format-toggle" do
-          div class: "format-option" do
-            input type: "radio",
-              name: "prompt[kind]",
-              value: "image",
-              id: "prompt_kind_image",
-              class: "format-input",
-              checked: current_kind == "image"
-            label for: "prompt_kind_image", class: "format-label" do
-              span(class: "material-symbols-outlined") { "photo_library" }
-              span { I18n.t("panels.create.image_label") }
-            end
-          end
-          div class: "format-option" do
-            input type: "radio",
-              name: "prompt[kind]",
-              value: "video",
-              id: "prompt_kind_video",
-              class: "format-input",
-              disabled: true,
-              checked: current_kind == "video"
-            label for: "prompt_kind_video", class: "format-label" do
-              span(class: "material-symbols-outlined") { "play_circle" }
-              span { I18n.t("panels.create.video_label") }
-            end
-          end
-        end
-        div class: "form-text text-white-50 mt-2" do
+        div class: "form-text text-white-50 mt-1" do
           I18n.t("panels.create.video_help")
         end
       end
 
-      button class: "btn btn-generate w-100", type: "submit" do
-        span(class: "material-symbols-outlined") { "bolt" }
-        span { I18n.t("panels.create.submit") }
+      div class: "row g-3" do
+        div class: "col-12 col-md-6" do
+          f.select :lang,
+            lang_options,
+            { selected: @prompt.lang.presence || LocalCaptionService::DEFAULT_LANG },
+            label: I18n.t("panels.create.lang_label"),
+            label_class: "form-label fw-semibold text-white"
+        end
+        div class: "col-12 col-md-6" do
+          f.select :tone,
+            tone_options,
+            { selected: @prompt.tone.presence || LocalCaptionService::DEFAULT_TONE },
+            label: I18n.t("panels.create.tone_label"),
+            label_class: "form-label fw-semibold text-white"
+        end
       end
+
+      f.submit I18n.t("panels.create.submit"), class: "btn btn-primary w-100 fw-semibold mt-2"
     end
   end
 
@@ -104,21 +87,15 @@ class Panels::CreatePanelComponent < ApplicationComponent
 
   def lang_options
     [
-      ["1:1 Square", "tr"],
-      ["9:16 Reel", "en"]
+      [ I18n.t("panels.create.lang_options.tr"), "tr" ],
+      [ I18n.t("panels.create.lang_options.en"), "en" ]
     ]
   end
 
   def tone_options
     [
-      ["Professional", "formal"],
-      ["Aesthetic", "friendly"],
-      ["Bold", "friendly"]
+      [ I18n.t("panels.create.tone_options.friendly"), "friendly" ],
+      [ I18n.t("panels.create.tone_options.formal"), "formal" ]
     ]
-  end
-
-  def current_kind
-    value = @prompt&.kind.to_s
-    value.presence || "image"
   end
 end

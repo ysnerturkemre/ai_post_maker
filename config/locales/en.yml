@@ -66,9 +66,8 @@ en:
       copy_caption: "Copy caption"
       copy_done: "Copied!"
       no_preview: "No preview image found."
-      fallback_title: "Platform Redirect"
-      fallback_description: "Direct sharing to %{platform} is not supported. Download the asset and copy the caption to continue."
-      back_to_home: "Back to dashboard"
+      share_landing_title: "Shared Image"
+      share_landing_copy_link_hint: "This page URL"
       filters:
         all: "All"
         images: "Images"

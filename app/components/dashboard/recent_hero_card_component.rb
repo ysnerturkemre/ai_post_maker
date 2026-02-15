@@ -160,6 +160,7 @@ module Dashboard
       button class: "btn btn-outline-light btn-sm",
         type: "button",
         data: { action: "click->share-modal#open" } do
+        span(class: "material-symbols-outlined me-1", aria_hidden: true) { "share" }
         I18n.t("panels.recent.share")
       end
     end
@@ -222,27 +223,45 @@ module Dashboard
             end
             div class: "share-platform-bar",
               data: { action: "click->share-modal#stopPropagation" } do
-              platform_button("X", "shareX")
-              platform_button("Instagram", "fallback", share_post_path(@job.id, platform: "instagram"))
-              platform_button("TikTok", "fallback", share_post_path(@job.id, platform: "tiktok"))
-              platform_button("Reddit", "shareReddit")
+              platform_button("X", "shareX", "x")
+              platform_button("Instagram", "shareInstagram", "instagram")
+              platform_button("TikTok", "shareTikTok", "tiktok")
+              platform_button("Reddit", "shareReddit", "reddit")
+              modal_download_button
             end
-          end
-
-          div class: "d-flex flex-wrap gap-2 justify-content-end" do
-            modal_download_button
-            modal_copy_button
           end
         end
       end
     end
 
-    def platform_button(label, action, fallback_url = nil)
+    def platform_button(label, action, platform)
       data = { action: "click->share-modal##{action}" }
-      data[:url] = fallback_url if fallback_url.present?
 
       button type: "button", class: "share-platform-btn", data: data do
-        label
+        platform_icon(platform)
+        span { label }
+      end
+    end
+
+    def platform_icon(platform)
+      svg xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 24 24",
+        class: "share-platform-icon-svg",
+        aria_hidden: true do |icon|
+        icon.path d: platform_icon_path(platform)
+      end
+    end
+
+    def platform_icon_path(platform)
+      case platform
+      when "instagram"
+        "M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.9a3.85 3.85 0 0 0-3.85 3.85v8.5a3.85 3.85 0 0 0 3.85 3.85h8.5a3.85 3.85 0 0 0 3.85-3.85v-8.5a3.85 3.85 0 0 0-3.85-3.85h-8.5zm8.93 1.5a1.37 1.37 0 1 1 0 2.74 1.37 1.37 0 0 1 0-2.74zM12 7.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6zm0 1.9a2.9 2.9 0 1 0 0 5.8 2.9 2.9 0 0 0 0-5.8z"
+      when "tiktok"
+        "M14.75 2h2.85c.2 1.72 1.22 3.2 2.72 3.95v2.9c-1.43-.04-2.8-.43-3.97-1.14v7.24c0 3.63-2.97 6.6-6.6 6.6s-6.6-2.97-6.6-6.6 2.97-6.6 6.6-6.6c.36 0 .72.03 1.06.09v2.9a3.76 3.76 0 1 0 2.99 3.68V2z"
+      when "reddit"
+        "M24 11.5c0-1.26-1.03-2.29-2.29-2.29-.61 0-1.16.24-1.57.63-1.54-1.01-3.63-1.66-5.96-1.75l1.01-3.18 2.74.64A1.72 1.72 0 1 0 18.23 4l-3.41-.8a.96.96 0 0 0-1.13.63l-1.29 4.07c-2.47.04-4.7.69-6.3 1.73a2.28 2.28 0 0 0-1.53-.59 2.29 2.29 0 1 0 1.55 3.98 4.54 4.54 0 0 0-.08.82c0 3.25 3.77 5.89 8.41 5.89 4.65 0 8.42-2.64 8.42-5.89 0-.29-.03-.58-.1-.86A2.28 2.28 0 0 0 24 11.5zm-13.95 1.63a1.36 1.36 0 1 1 0-2.72 1.36 1.36 0 0 1 0 2.72zm6.9 0a1.36 1.36 0 1 1 0-2.72 1.36 1.36 0 0 1 0 2.72zm-1.14 3.96c-1.05 1.05-3.57 1.05-4.62 0a.95.95 0 1 1 1.34-1.34c.27.27 1.67.27 1.94 0a.95.95 0 0 1 1.34 1.34z"
+      else
+        "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231z"
       end
     end
 
@@ -250,27 +269,13 @@ module Dashboard
       return if @job.asset_url.blank?
 
       a href: @job.asset_url,
-        class: "btn btn-outline-secondary btn-sm",
+        class: "share-platform-btn",
         download: true,
         target: "_blank",
         rel: "noopener",
         data: { action: "click->share-modal#stopPropagation" } do
-        I18n.t("panels.recent.download")
-      end
-    end
-
-    def modal_copy_button
-      return if @job.caption.blank?
-
-      button class: "btn btn-outline-secondary btn-sm",
-        type: "button",
-        data: {
-          controller: "clipboard",
-          action: "click->share-modal#stopPropagation clipboard#copy",
-          clipboard_text_value: @job.caption,
-          clipboard_copied_label_value: I18n.t("panels.recent.copy_done")
-        } do
-        I18n.t("panels.recent.copy_caption")
+        span(class: "material-symbols-outlined share-platform-icon-material", aria_hidden: true) { "download" }
+        span { I18n.t("panels.recent.download") }
       end
     end
 
@@ -279,7 +284,7 @@ module Dashboard
     end
 
     def share_url
-      @job.asset_url.to_s.presence || home_path
+      "#{view_context.request.base_url}#{share_landing_path(@job.id)}"
     end
   end
 end

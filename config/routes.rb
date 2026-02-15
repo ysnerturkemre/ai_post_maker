@@ -3,7 +3,7 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions: "users/sessions",
-    registrations: "users/registrations",
+    registrations: "users/registrations"
     # passwords: "users/passwords" # Şifre sıfırlama akışı sonraki sürümde açılacak.
   }
   root "home#index"
@@ -12,9 +12,9 @@ Rails.application.routes.draw do
   get "/home", to: "home#index", as: :home
   get "/home/dashboard_jobs", to: "home#dashboard_jobs", as: :home_dashboard_jobs
   post "/home", to: "home#create"
-  resources :posts, only: [:destroy] do
+  get "/p/:id", to: "share_pages#show", as: :share_landing
+  resources :posts, only: [ :destroy ] do
     post :cancel, on: :member
-    get :share, on: :member
   end
 
   if Rails.env.production?

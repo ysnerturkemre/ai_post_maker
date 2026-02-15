@@ -42,16 +42,16 @@ export default class extends Controller {
     window.open(`https://www.reddit.com/submit?url=${url}&title=${title}`, "_blank", "noopener")
   }
 
-  fallback(event) {
+  shareInstagram(event) {
     this.stopAndPrevent(event)
-    const url = event.currentTarget.dataset.url
-    if (!url) return
+    this.openExternal("instagram")
+  }
 
-    if (window.Turbo) {
-      window.Turbo.visit(url)
-    } else {
-      window.location.href = url
-    }
+  shareTikTok(event) {
+    this.stopAndPrevent(event)
+
+    this.copySharePayloadToClipboard()
+    this.openExternal("tiktok")
   }
 
   stopPropagation(event) {
@@ -68,5 +68,36 @@ export default class extends Controller {
   stopAndPrevent(event) {
     event.preventDefault()
     event.stopPropagation()
+  }
+
+  openExternal(platform) {
+    const destination = this.platformShareUrl(platform)
+    if (!destination) return
+
+    window.open(destination, "_blank", "noopener")
+  }
+
+  platformShareUrl(platform) {
+    const url = encodeURIComponent(this.urlValue || "")
+    if (!url) return null
+
+    if (platform === "instagram") {
+      return `https://www.instagram.com/?url=${url}`
+    }
+
+    if (platform === "tiktok") {
+      return "https://www.tiktok.com/upload"
+    }
+
+    return null
+  }
+
+  copySharePayloadToClipboard() {
+    if (!navigator.clipboard?.writeText) return
+
+    const lines = [this.textValue || "", this.urlValue || ""].filter(Boolean)
+    if (lines.length === 0) return
+
+    navigator.clipboard.writeText(lines.join("\n\n")).catch(() => {})
   }
 }

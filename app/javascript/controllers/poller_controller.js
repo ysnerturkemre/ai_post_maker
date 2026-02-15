@@ -33,6 +33,7 @@ export default class extends Controller {
 
   async refresh() {
     if (!this.urlValue) return
+    if (document.body.classList.contains("share-modal-open")) return
 
     try {
       const response = await fetch(this.urlValue, {

@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html lang="tr">
   <head>
-    <title><%= content_for(:title) || "AI Post Maker" %></title>
+    <title><%= @page_title || content_for(:title) || "AI Post Maker" %></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= yield :head %>
+    <% if @share_meta.present? %>
+      <meta property="og:title" content="<%= @share_meta[:title] %>">
+      <meta property="og:description" content="<%= @share_meta[:description] %>">
+      <meta property="og:image" content="<%= @share_meta[:image_url] %>">
+      <meta property="og:url" content="<%= @share_meta[:share_url] %>">
+      <meta property="og:type" content="website">
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="<%= @share_meta[:title] %>">
+      <meta name="twitter:description" content="<%= @share_meta[:description] %>">
+      <meta name="twitter:image" content="<%= @share_meta[:image_url] %>">
+    <% end %>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;600&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&amp;display=swap">
