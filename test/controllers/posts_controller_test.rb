@@ -47,6 +47,27 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "generated", post.reload.status
   end
 
+  test "share renders fallback page for instagram and tiktok" do
+    post = posts(:one)
+
+    get share_post_path(post, platform: "instagram")
+    assert_response :success
+    assert_includes response.body, "Platform Redirect"
+
+    get share_post_path(post, platform: "tiktok")
+    assert_response :success
+    assert_includes response.body, "TikTok"
+  end
+
+  test "share falls back to instagram for unknown platform" do
+    post = posts(:one)
+
+    get share_post_path(post, platform: "x")
+
+    assert_response :success
+    assert_includes response.body, "Instagram"
+  end
+
   test "prevents access to posts owned by other users" do
     sign_in users(:two)
     post = posts(:one)
@@ -55,6 +76,9 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
 
     post cancel_post_path(post)
+    assert_response :not_found
+
+    get share_post_path(post, platform: "instagram")
     assert_response :not_found
   end
 end

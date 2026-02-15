@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   post "/home", to: "home#create"
   resources :posts, only: [:destroy] do
     post :cancel, on: :member
+    get :share, on: :member
   end
 
   if Rails.env.production?

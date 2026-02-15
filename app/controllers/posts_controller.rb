@@ -2,6 +2,20 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
 
+  def share
+    @post = current_user.posts.includes(:assets, :prompt).find(params[:id])
+    platform = params[:platform].to_s.downcase
+    @platform = %w[instagram tiktok].include?(platform) ? platform : "instagram"
+
+    render Posts::ShareFallbackPageComponent.new(
+      post: @post,
+      platform: @platform,
+      asset_url: asset_url_for(@post.assets.first)
+    )
+  rescue ActiveRecord::RecordNotFound
+    head :not_found
+  end
+
   def destroy
     @post = current_user.posts.find(params[:id])
     prompt = @post.prompt
@@ -80,5 +94,18 @@ class PostsController < ApplicationController
   def merge_data(post, extra)
     safe_data = post.data.is_a?(Hash) ? post.data : {}
     safe_data.merge(extra).compact
+  end
+
+  def asset_url_for(asset)
+    return if asset.blank?
+
+    if asset.file.attached?
+      url_for(asset.file)
+    else
+      asset.file_url
+    end
+  rescue => e
+    Rails.logger.warn("[PostsController] asset url error: #{e.message}")
+    asset.file_url
   end
 end

@@ -892,6 +892,80 @@ body {
   font-size: 0.98rem;
 }
 
+body.share-modal-open {
+  overflow: hidden;
+}
+
+.share-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1050;
+}
+
+.share-modal-card {
+  width: min(640px, 100%);
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.3);
+  padding: 16px;
+}
+
+.share-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.share-modal-title {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.share-modal-close {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  line-height: 1;
+  font-size: 1.25rem;
+}
+
+.share-platform-bar {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.share-platform-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(15, 23, 42, 0.86);
+  color: #fff;
+}
+
+.share-platform-btn:hover {
+  background: #0f172a;
+}
+
 .gallery-toggle-group .filter-toggle {
   font-weight: 600;
   border-width: 1px;

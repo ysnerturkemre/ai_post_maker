@@ -60,10 +60,15 @@ en:
     recent:
       title: "Latest content"
       subtitle: "Recent creations"
-      share: "Share on Instagram"
+      share: "Share"
+      share_modal_title: "Share"
       download: "Download"
       copy_caption: "Copy caption"
       copy_done: "Copied!"
+      no_preview: "No preview image found."
+      fallback_title: "Platform Redirect"
+      fallback_description: "Direct sharing to %{platform} is not supported. Download the asset and copy the caption to continue."
+      back_to_home: "Back to dashboard"
       filters:
         all: "All"
         images: "Images"

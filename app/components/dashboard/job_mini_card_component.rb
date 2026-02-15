@@ -13,9 +13,11 @@ module Dashboard
     def view_template
       turbo_frame_tag dom_id(@job) do
         div class: "col" do
-          article class: "recent-card h-100" do
+          article class: "recent-card h-100",
+            data: share_data do
             media_block
             card_body
+            share_modal
           end
         end
       end
@@ -126,11 +128,10 @@ module Dashboard
     def share_button
       return if @job.asset_url.blank? && @job.caption.blank?
 
-      a href: "https://www.instagram.com/",
-        class: "icon-button instagram-gradient",
-        target: "_blank",
-        rel: "noopener" do
-        span(class: "material-symbols-outlined") { "share" }
+      button class: "btn btn-outline-dark btn-sm btn-share-prominent",
+        type: "button",
+        data: { action: "click->share-modal#open" } do
+        I18n.t("panels.recent.share")
       end
     end
 
@@ -173,7 +174,101 @@ module Dashboard
     def tag_labels
       primary = @job.output_type.to_s == "video" ? "VIDEO" : "IMAGE"
       secondary = @job.status.to_s.presence || "AI"
-      [primary, secondary.upcase]
+      [ primary, secondary.upcase ]
+    end
+
+    def share_data
+      {
+        controller: "share-modal",
+        share_modal_title_value: @job.prompt.to_s,
+        share_modal_text_value: share_text,
+        share_modal_url_value: share_url
+      }
+    end
+
+    def share_modal
+      div class: "share-modal-backdrop",
+        hidden: true,
+        data: {
+          "share-modal-target": "modal",
+          action: "click->share-modal#closeFromBackdrop"
+        } do
+        div class: "share-modal-card", data: { action: "click->share-modal#stopPropagation" } do
+          div class: "share-modal-head" do
+            h5(class: "share-modal-title mb-0") { I18n.t("panels.recent.share_modal_title") }
+            button type: "button",
+              class: "share-modal-close",
+              data: { action: "click->share-modal#close" } do
+              "×"
+            end
+          end
+
+          div class: "preview-box mb-3" do
+            if @job.asset_url.present?
+              img src: @job.asset_url, alt: "Generated asset", class: "preview-image"
+            else
+              span(class: "text-muted small px-3") { I18n.t("panels.recent.no_preview") }
+            end
+            div class: "share-platform-bar",
+              data: { action: "click->share-modal#stopPropagation" } do
+              platform_button("X", "shareX")
+              platform_button("Instagram", "fallback", share_post_path(@job.id, platform: "instagram"))
+              platform_button("TikTok", "fallback", share_post_path(@job.id, platform: "tiktok"))
+              platform_button("Reddit", "shareReddit")
+            end
+          end
+
+          div class: "d-flex flex-wrap gap-2 justify-content-end" do
+            modal_download_button
+            modal_copy_button
+          end
+        end
+      end
+    end
+
+    def platform_button(label, action, fallback_url = nil)
+      data = { action: "click->share-modal##{action}" }
+      data[:url] = fallback_url if fallback_url.present?
+
+      button type: "button", class: "share-platform-btn", data: data do
+        label
+      end
+    end
+
+    def modal_download_button
+      return if @job.asset_url.blank?
+
+      a href: @job.asset_url,
+        class: "btn btn-outline-secondary btn-sm",
+        download: true,
+        target: "_blank",
+        rel: "noopener",
+        data: { action: "click->share-modal#stopPropagation" } do
+        I18n.t("panels.recent.download")
+      end
+    end
+
+    def modal_copy_button
+      return if @job.caption.blank?
+
+      button class: "btn btn-outline-secondary btn-sm",
+        type: "button",
+        data: {
+          controller: "clipboard",
+          action: "click->share-modal#stopPropagation clipboard#copy",
+          clipboard_text_value: @job.caption,
+          clipboard_copied_label_value: I18n.t("panels.recent.copy_done")
+        } do
+        I18n.t("panels.recent.copy_caption")
+      end
+    end
+
+    def share_text
+      @job.caption.to_s.presence || @job.prompt.to_s
+    end
+
+    def share_url
+      @job.asset_url.to_s.presence || home_path
     end
   end
 end
