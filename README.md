@@ -10,10 +10,6 @@ Rails 8 + Phlex + Hotwire tabanli, ComfyUI ile gorsel uretip paylasim akisini yo
 - Phlex bilesen tabanli UI + Bootstrap 5
 - Devise ile kimlik dogrulama
 - Share landing sayfasi (`/p/:id`) ve temel sosyal paylasim aksiyonlari
-
-## Demo / Ekran Goruntusu
-_Henuz eklenmedi. Buraya ekran goruntusu veya GIF ekleyin._
-
 ## Gereksinimler
 - Ruby `3.4.x` (`.ruby-version`: `ruby-3.4.2`)
 - Rails `8.x`
@@ -24,6 +20,12 @@ _Henuz eklenmedi. Buraya ekran goruntusu veya GIF ekleyin._
 - Opsiyonel: ComfyUI (varsayilan: `http://localhost:8188` / Docker icinde `http://host.docker.internal:8188`)
 
 ## Hizli Baslangic (Local)
+0. Repoyu klonlayip klasore girin:
+```bash
+git clone https://github.com/ysnerturkemre/ai_post_maker.git
+cd ai_post_maker
+```
+
 1. Ortam dosyasini olusturun:
 ```bash
 cp .env.example .env
@@ -36,12 +38,14 @@ cp .env.example .env
 bundle install
 ```
 
-4. Veritabanini hazirlayin:
+4. PostgreSQL ve Redis servislerinin calistigindan emin olun.
+
+5. Veritabanini hazirlayin:
 ```bash
 bin/rails db:prepare
 ```
 
-5. Uygulamayi iki ayri terminalde calistirin:
+6. Uygulamayi iki ayri terminalde calistirin:
 ```bash
 bin/rails server
 ```
@@ -49,8 +53,8 @@ bin/rails server
 bundle exec sidekiq
 ```
 
-6. Uygulamayi acin: `http://localhost:3000`
-7. Sidekiq paneli: `http://localhost:3000/sidekiq`
+7. Uygulamayi acin: `http://localhost:3000`
+8. Sidekiq paneli: `http://localhost:3000/sidekiq`
 
 Not: `bin/dev` varsayilan olarak `Procfile.dev` bekler; bu repoda `Procfile.dev` bulunmadigi icin yukaridaki iki terminal yaklasimini kullanin.
 
@@ -78,29 +82,33 @@ Notlar:
 Docker icinde ComfyUI icin varsayilan adres `http://host.docker.internal:8188`.
 
 ## Konfigurasyon
-Asagidaki degiskenleri `.env` dosyasinda yonetin:
+`.env` dosyanizi duzenleyin:
 
-| ENV | Zorunlu | Varsayilan | Aciklama |
-|---|---|---|---|
-| `DATABASE_URL` | Evet | - | Rails ana veritabani baglantisi |
-| `DATABASE_URL_PRODUCTION` | Hayir | `DATABASE_URL` | Production DB URL (opsiyonel override) |
-| `REDIS_URL` | Evet | - | Sidekiq Redis baglantisi |
-| `RAILS_ENV` | Hayir | `development` | Calisma ortami |
-| `RAILS_MASTER_KEY` | Ortama bagli | - | Rails credentials cozumleme anahtari |
-| `RAILS_MAX_THREADS` | Hayir | `5` (`database.yml`) / `3` (`puma.rb`) | Thread sayisi |
-| `PORT` | Hayir | `3000` | Puma portu |
-| `COMFYUI_BASE_URL` | ComfyUI icin evet | `http://host.docker.internal:8188` | ComfyUI HTTP endpoint |
-| `COMFYUI_WORKFLOW_PATH` | Hayir | `config/comfyui/workflows/aimaker_image_v1.json` | Kullanilacak workflow JSON yolu |
-| `COMFYUI_POLL_INTERVAL_SECONDS` | Hayir | `3` | ComfyUI cikti kontrol araligi |
-| `COMFYUI_POLL_TIMEOUT_SECONDS` | Hayir | `600` | ComfyUI timeout suresi |
-| `JOB_CONCURRENCY` | Hayir | `1` | Solid Queue isci sureci sayisi (yalniz `bin/jobs` icin) |
-| `OPENAI_API_KEY` | Hayir | - | Gelecek provider/entegrasyonlar icin yer tutucu |
-| `STABILITY_API_KEY` | Hayir | - | Gelecek provider/entegrasyonlar icin yer tutucu |
-| `HUGGINGFACE_API_KEY` | Hayir | - | Gelecek provider/entegrasyonlar icin yer tutucu |
-| `SMTP_ADDRESS` | Hayir | - | Mail sunucu adresi |
-| `SMTP_PORT` | Hayir | - | Mail sunucu portu |
-| `SMTP_USERNAME` | Hayir | - | Mail kullanici adi |
-| `SMTP_PASSWORD` | Hayir | - | Mail sifresi |
+```dotenv
+# === REQUIRED (V1) ===
+DATABASE_URL=postgres://postgres:password@localhost:5432/ai_post_maker_development
+REDIS_URL=redis://localhost:6379/1
+COMFYUI_BASE_URL=http://localhost:8188
+
+# === RAILS ===
+RAILS_ENV=development
+RAILS_MASTER_KEY=
+RAILS_MAX_THREADS=5
+PORT=3000
+
+# === COMFYUI ===
+COMFYUI_WORKFLOW_PATH=config/comfyui/workflows/aimaker_image_v1.json
+COMFYUI_POLL_INTERVAL_SECONDS=3
+COMFYUI_POLL_TIMEOUT_SECONDS=600
+
+# === OPTIONAL ===
+DATABASE_URL_PRODUCTION=
+JOB_CONCURRENCY=1
+```
+
+V1 icin kritik degiskenler: `DATABASE_URL`, `REDIS_URL`, `COMFYUI_BASE_URL`.
+Docker icinde `COMFYUI_BASE_URL` genelde `http://host.docker.internal:8188` olur.
+`DATABASE_URL` ornegindeki `postgres:password` degerlerini kendi lokal PostgreSQL kullaniciniza gore guncelleyin.
 
 ## Entegrasyonlar
 - ComfyUI (yerel provider): `POST /prompt` ile job baslatilir, `GET /history/:prompt_id` ile sonuc metadata alinir, `GET /view?...` ile dosya indirilir, dosya sistemi paylasimi beklenmez ve iletisim HTTP uzerindendir.
@@ -197,15 +205,3 @@ bin/brakeman
 
 ## Lisans
 TBD
-
-## Degisiklik Ozeti
-- README tamamen yeniden yazildi ve proje odakli hale getirildi.
-- Local kurulum adimlari calisir komutlarla netlestirildi.
-- Docker akisi ayri baslikta, sirali ve uygulanabilir komutlarla eklendi.
-- ENV degiskenleri tablo formatinda toplanip gercek kod kullanimlarina gore duzenlendi.
-- Rails/Phlex/Hotwire, Sidekiq/Redis/Postgres ve mimari katmanlar aciklandi.
-- ComfyUI entegrasyonu ve HTTP tabanli pipeline netlestirildi.
-- Kullanici akisinin adim adim calisma sekli eklendi.
-- Test, lint ve guvenlik tarama komutlari dogrulandi.
-- Dagitim notlari Kamal ve temel production gereksinimleriyle kisaltildi.
-- 10 maddelik troubleshooting bolumu eklendi.
